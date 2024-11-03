@@ -10,7 +10,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@vee-validate/nuxt": "^4.14.6",
+    "@vee-validate/rules": "^4.14.6",
     "nuxt": "^3.13.2",
+    "vee-validate": "^4.14.6",
     "vue": "latest",
     "vue-router": "latest"
   }
