@@ -1,9 +1,9 @@
 <template>
   <NavHeader />
-  <div class="flex justify-between items-center my-4 px-4">
-    <h1 class="text-2xl font-bold">Lista de Dispositivos</h1>
+  <div class="flex flex-col sm:flex-row justify-between items-center my-4 px-4">
+    <h1 class="text-2xl sm:text-3xl font-bold">Lista de Dispositivos</h1>
     <button
-      class="bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+      class="mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
     >
       Registrar Nuevo Dispositivo
     </button>
@@ -45,7 +45,7 @@
           {{ item.descripcionProblema }}
         </p>
         <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Cliente propietario:</strong> 
+          <strong>Cliente propietario:</strong>
         </p>
         <p class="text-sm sm:text-base text-gray-600 mt-1">
           {{ item.clientePropietario }}
