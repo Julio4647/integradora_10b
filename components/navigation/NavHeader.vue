@@ -20,7 +20,7 @@
         <!-- Enlaces de navegación centrados para pantallas medianas en adelante -->
         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-4">
           <a href="/dashboard" class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary">Inicio</a>
-          <a href="/devices" class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary">Dispositivos</a>
+          <a href="/dashboard/devices" class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary">Dispositivos</a>
   
           <!-- Enlace de "Usuarios" con desglose -->
           <div class="relative">
@@ -59,7 +59,7 @@
       <!-- Menú hamburguesa desplegable para pantallas pequeñas -->
       <div v-if="mobileMenuOpen" class="md:hidden bg-white text-gray-800 space-y-2 p-4">
         <a href="/dashboard" class="block font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:text-gray-900">Inicio</a>
-        <a href="/devices" class="block font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:text-gray-900">Dispositivos</a>
+        <a href="/dashboard/devices" class="block font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:text-gray-900">Dispositivos</a>
   
         <!-- Enlace de "Usuarios" con desglose en menú hamburguesa -->
         <div class="relative">
