@@ -6,7 +6,8 @@
     >
       <h1 class="text-2xl sm:text-3xl font-bold">Lista de Administradores</h1>
       <button
-        class="mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+        @click="registerAdmin"
+        class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
       >
         Registrar Nuevo Administrador
       </button>
@@ -88,6 +89,11 @@ export default defineComponent({
     NavHeader,
   },
   name: "AdminList",
+  methods: {
+    registerAdmin() {
+      this.$router.push("/dashboard/admins/register");
+    },
+  },
   setup() {
     const admins = ref([
       {
