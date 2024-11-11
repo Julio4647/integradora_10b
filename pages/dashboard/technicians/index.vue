@@ -6,7 +6,8 @@
     >
       <h1 class="text-2xl sm:text-3xl font-bold">Lista de Tecnicos</h1>
       <button
-        class="mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+        @click="registerTechnicians"
+        class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
       >
         Registrar Nuevo Tecnico
       </button>
@@ -89,6 +90,12 @@ export default defineComponent({
   },
   name: "TechnicianList",
   setup() {
+    const router = useRouter();
+
+    const registerTechnicians = () => {
+      router.push("/dashboard/technicians/register");
+    };
+
     const technicians = ref([
       {
         id: 1,
@@ -198,6 +205,7 @@ export default defineComponent({
       paginatedTechnicians,
       prevPage,
       nextPage,
+      registerTechnicians
     };
   },
 });
