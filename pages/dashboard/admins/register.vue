@@ -5,6 +5,7 @@
       class="flex flex-col sm:flex-row justify-between items-center my-4 px-4"
     >
       <button
+      @click="goBack"
         class="focus:outline-none font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white  py-2 px-4 rounded-lg"
       >
         <Icon

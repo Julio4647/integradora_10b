@@ -6,7 +6,8 @@
     >
       <h1 class="text-2xl sm:text-3xl font-bold">Lista de Clientes</h1>
       <button
-        class="mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+        @click="registerClient"
+        class="focus:outline-none font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
       >
         Registrar Nuevo Cliente
       </button>
@@ -86,6 +87,11 @@ import { Icon } from "@iconify/vue/dist/iconify.js";
 export default defineComponent({
   components: {
     NavHeader,
+  },
+  methods: {
+    registerClient() {
+      this.$router.push("/dashboard/clients/register");
+    },
   },
   name: "TechnicianList",
   setup() {
