@@ -15,9 +15,13 @@
     "@vee-validate/nuxt": "^4.14.6",
     "@vee-validate/rules": "^4.14.6",
     "nuxt": "^3.13.2",
-    "sweetalert2": "^11.14.4",
+    "qrcode": "^1.5.4",
+    "sweetalert2": "^11.14.5",
     "vee-validate": "^4.14.6",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5"
   }
 }

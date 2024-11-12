@@ -3,7 +3,8 @@
   <div class="flex flex-col sm:flex-row justify-between items-center my-4 px-4">
     <h1 class="text-2xl sm:text-3xl font-bold">Lista de Dispositivos</h1>
     <button
-      class="mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+      @click="registerDevices"
+      class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary  mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
     >
       Registrar Nuevo Dispositivo
     </button>
@@ -228,7 +229,7 @@ export default defineComponent({
   },
   methods: {
     registerDevices() {
-      this.$router.push("/devices/registerDevices");
+      this.$router.push("devices/register");
     },
     editDevice(item: any) {
       console.log("Editar dispositivo:", item);
