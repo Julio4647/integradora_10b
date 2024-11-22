@@ -38,6 +38,7 @@
           </div>
           <div class="flex gap-4 justify-center items-center">
             <button
+              @click="editTechnicians()"
               class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
             >
               <Icon
@@ -46,6 +47,7 @@
               />
             </button>
             <button
+              @click="deleteTechnician()"
               class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
             >
               <Icon
@@ -83,12 +85,39 @@
 import { defineComponent, ref, computed } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
+import Swal from "sweetalert2";
 
 export default defineComponent({
   components: {
     NavHeader,
   },
   name: "TechnicianList",
+  methods: {
+    editTechnicians() {
+      this.$router.push("/dashboard/technicians/[id]");
+    },
+    deleteTechnician() {
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¡No podrás recuperar esta información!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "El técnico ha sido eliminado.",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Aceptar",
+          });
+        }
+      });
+    },
+  },
   setup() {
     const router = useRouter();
 
@@ -205,7 +234,7 @@ export default defineComponent({
       paginatedTechnicians,
       prevPage,
       nextPage,
-      registerTechnicians
+      registerTechnicians,
     };
   },
 });

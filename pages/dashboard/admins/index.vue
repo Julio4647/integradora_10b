@@ -38,6 +38,7 @@
           </div>
           <div class="flex gap-4 justify-center items-center">
             <button
+              @click="editAdmin(admin.id)"
               class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
             >
               <Icon
@@ -46,6 +47,7 @@
               />
             </button>
             <button
+              @click="deleteAdmin(admin.id)"
               class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
             >
               <Icon
@@ -83,6 +85,7 @@
 import { defineComponent, ref, computed } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
+import Swal from "sweetalert2";
 
 export default defineComponent({
   components: {
@@ -92,6 +95,40 @@ export default defineComponent({
   methods: {
     registerAdmin() {
       this.$router.push("/dashboard/admins/register");
+    },
+    editAdmin(adminId: number) {
+      this.$router.push(`/dashboard/admins/${adminId}`);
+    },
+    deleteAdmin(adminId: number) {
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¡No podrás recuperar esta información!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.removeAdmin(adminId);
+
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "El administrador ha sido eliminado.",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Aceptar",
+          });
+        }
+      });
+    },
+
+    removeAdmin(adminId: number) {
+      // Lógica para eliminar el administrador
+      const index = this.admins.findIndex((admin) => admin.id === adminId);
+      if (index !== -1) {
+        this.admins.splice(index, 1);
+      }
     },
   },
   setup() {

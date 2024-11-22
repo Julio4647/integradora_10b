@@ -101,7 +101,9 @@
 
         <!-- Cliente Propietario -->
         <div>
-          <label for="cliente" class="block text-md font-medium text-gray-700">Cliente Propietario</label>
+          <label for="cliente" class="block text-md font-medium text-gray-700"
+            >Cliente Propietario</label
+          >
           <Field
             name="cliente"
             as="select"
@@ -111,14 +113,22 @@
             rules="required"
           >
             <option value="" disabled selected>Seleccione un cliente</option>
-            <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.nombre }}</option>
+            <option
+              v-for="cliente in clientes"
+              :key="cliente.id"
+              :value="cliente.id"
+            >
+              {{ cliente.nombre }}
+            </option>
           </Field>
           <ErrorMessage name="cliente" class="text-red-500 text-sm" />
         </div>
 
         <!-- Técnico a Cargo -->
         <div>
-          <label for="tecnico" class="block text-dm font-medium text-gray-700">Técnico a Cargo</label>
+          <label for="tecnico" class="block text-dm font-medium text-gray-700"
+            >Técnico a Cargo</label
+          >
           <Field
             name="tecnico"
             as="select"
@@ -128,11 +138,16 @@
             rules="required"
           >
             <option value="" disabled selected>Seleccione un técnico</option>
-            <option v-for="tecnico in tecnicos" :key="tecnico.id" :value="tecnico.id">{{ tecnico.nombre }}</option>
+            <option
+              v-for="tecnico in tecnicos"
+              :key="tecnico.id"
+              :value="tecnico.id"
+            >
+              {{ tecnico.nombre }}
+            </option>
           </Field>
           <ErrorMessage name="tecnico" class="text-red-500 text-sm" />
         </div>
-
 
         <!-- Fecha de Ingreso -->
         <div class="md:col-span-2">
@@ -212,10 +227,11 @@ export default defineComponent({
       const qrData = `ID: ${productoId}, Nombre: ${productoNombre}`;
       const qrCodeUrl = await QRCode.toDataURL(qrData);
 
-      // Muestra el SweetAlert con el código QR
-      Swal.fire({
-        title: "Equipo Registrado Exitosamente",
-        html: `
+      // Función para mostrar el SweetAlert con el código QR
+      const showQRCodeAlert = async () => {
+        const result = await Swal.fire({
+          title: "Equipo Registrado Exitosamente",
+          html: `
         <div style="display: flex; flex-direction: column; align-items: center;">
           <p>Escanea el código QR para ver los detalles:</p>
           <img src="${qrCodeUrl}" alt="Código QR" style="width: 150px; height: 150px; margin-top: 10px;" />
@@ -226,13 +242,37 @@ export default defineComponent({
           </a>
         </div>
       `,
-        icon: "success",
-        confirmButtonText: "Aceptar",
-      }).then((result) => {
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        });
+
         if (result.isConfirmed) {
-          router.push("/dashboard/devices");
+          const closeConfirmation = await Swal.fire({
+            title: "¿Estás seguro de cerrar el código QR?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cerrar",
+            cancelButtonText: "Cancelar",
+          });
+
+          if (closeConfirmation.isConfirmed) {
+            // Redirigir al usuario a la página de devices
+            Swal.fire({
+              title: "Código QR cerrado",
+              icon: "info",
+              confirmButtonText: "Aceptar",
+            }).then(() => {
+              router.push("/dashboard/devices");
+            });
+          } else {
+            // Si el usuario cancela, volvemos a mostrar el QR
+            showQRCodeAlert();
+          }
         }
-      });
+      };
+
+      // Muestra el SweetAlert inicial con el QR
+      showQRCodeAlert();
     };
 
     const goBack = () => {
@@ -243,7 +283,7 @@ export default defineComponent({
       submitForm,
       goBack,
       clientes,
-      tecnicos
+      tecnicos,
     };
   },
 });

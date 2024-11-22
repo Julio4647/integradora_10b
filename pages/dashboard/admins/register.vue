@@ -5,8 +5,8 @@
       class="flex flex-col sm:flex-row justify-between items-center my-4 px-4"
     >
       <button
-      @click="goBack"
-        class="focus:outline-none font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white  py-2 px-4 rounded-lg"
+        @click="goBack"
+        class="focus:outline-none font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
       >
         <Icon
           icon="material-symbols:arrow-circle-left-outline"
@@ -28,10 +28,9 @@
         v-slot="{ errors }"
         class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow mt-8"
       >
+        <!-- Campos del formulario -->
         <div>
-          <label for="nombre" class="block text-md font-medium text-gray-700"
-            >Nombre</label
-          >
+          <label for="nombre" class="block text-md font-medium text-gray-700">Nombre</label>
           <Field
             name="nombre"
             as="input"
@@ -46,9 +45,7 @@
         </div>
 
         <div>
-          <label for="apellido" class="block text-md font-medium text-gray-700"
-            >Apellido</label
-          >
+          <label for="apellido" class="block text-md font-medium text-gray-700">Apellido</label>
           <Field
             name="apellido"
             as="input"
@@ -63,9 +60,7 @@
         </div>
 
         <div>
-          <label for="email" class="block text-md font-medium text-gray-700"
-            >Correo Electrónico</label
-          >
+          <label for="email" class="block text-md font-medium text-gray-700">Correo Electrónico</label>
           <Field
             name="email"
             as="input"
@@ -80,9 +75,7 @@
         </div>
 
         <div>
-          <label for="telefono" class="block text-md font-medium text-gray-700"
-            >Teléfono</label
-          >
+          <label for="telefono" class="block text-md font-medium text-gray-700">Teléfono</label>
           <Field
             name="telefono"
             as="input"
@@ -97,9 +90,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label for="direccion" class="block text-md font-medium text-gray-700"
-            >Dirección</label
-          >
+          <label for="direccion" class="block text-md font-medium text-gray-700">Dirección</label>
           <Field
             name="direccion"
             as="input"
@@ -131,6 +122,7 @@ import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
+import Swal from "sweetalert2";
 
 defineRule("required", (value: string) => {
   return value ? true : "Este campo es obligatorio";
@@ -152,8 +144,32 @@ export default defineComponent({
   setup() {
     const router = useRouter();
 
-    const submitForm = (values: any) => {
-      console.log("Formulario enviado", values);
+    const submitForm = async (values: any) => {
+      try {
+        const response = true;
+
+        if (response) {
+          await Swal.fire({
+            icon: "success",
+            title: "¡Administrador registrado!",
+            text: "El administrador se ha registrado con éxito.",
+          });
+          router.push("/dashboard/admins");
+        } else {
+          await Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Hubo un problema al registrar al administrador.",
+          });
+        }
+      } catch (error) {
+        console.error("Error al registrar el administrador:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un error inesperado.",
+        });
+      }
     };
 
     const goBack = () => {
@@ -169,5 +185,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Puedes agregar estilos adicionales si es necesario */
 </style>

@@ -113,6 +113,8 @@
 import { defineComponent } from "vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import NavHeader from "~/components/navigation/NavHeader.vue";
+import Swal from "sweetalert2";
+
 
 export default defineComponent({
   name: "devicesList",
@@ -123,6 +125,7 @@ export default defineComponent({
     return {
       items: [
         {
+          id: 1,
           modelo: "iPhone 13",
           marca: "Apple",
           numeroSerie: "ABC123456",
@@ -133,6 +136,7 @@ export default defineComponent({
           tipo: "celular",
         },
         {
+          id: 2,
           modelo: "MacBook Pro",
           marca: "Apple",
           numeroSerie: "DEF789012",
@@ -143,6 +147,7 @@ export default defineComponent({
           tipo: "laptop",
         },
         {
+          id: 3,
           modelo: "Galaxy Watch 4",
           marca: "Samsung",
           numeroSerie: "GHI345678",
@@ -153,6 +158,7 @@ export default defineComponent({
           tipo: "smartwatch",
         },
         {
+          id: 4,
           modelo: "JBL Flip 5",
           marca: "JBL",
           numeroSerie: "JKL901234",
@@ -163,6 +169,7 @@ export default defineComponent({
           tipo: "bocinas",
         },
         {
+          id: 5,
           modelo: "PlayStation 5",
           marca: "Sony",
           numeroSerie: "MNO567890",
@@ -173,6 +180,7 @@ export default defineComponent({
           tipo: "consola de videojuegos",
         },
         {
+          id: 6,
           modelo: "Switch OLED",
           marca: "Nintendo",
           numeroSerie: "OPQ123456",
@@ -183,6 +191,7 @@ export default defineComponent({
           tipo: "consola de videojuegos",
         },
         {
+          id: 7,
           modelo: "Surface Pro 7",
           marca: "Microsoft",
           numeroSerie: "RST789012",
@@ -193,6 +202,7 @@ export default defineComponent({
           tipo: "laptop",
         },
         {
+          id: 8,
           modelo: "Google Pixel 6",
           marca: "Google",
           numeroSerie: "UVW345678",
@@ -203,6 +213,7 @@ export default defineComponent({
           tipo: "celular",
         },
         {
+          id: 9,
           modelo: "Huawei P40",
           marca: "Huawei",
           numeroSerie: "XYZ901234",
@@ -233,16 +244,28 @@ export default defineComponent({
     },
     editDevice(item: any) {
       console.log("Editar dispositivo:", item);
+      this.$router.push("devices/[id]");
     },
     deleteDevice(item: any) {
-      console.log("Eliminar dispositivo:", item);
-      if (
-        confirm(
-          `¿Estás seguro de que deseas eliminar el dispositivo ${item.modelo}?`
-        )
-      ) {
-        this.items = this.items.filter((i) => i !== item);
-      }
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: `Estás a punto de eliminar el dispositivo "${item.modelo}". Esta acción no se puede deshacer.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.items = this.items.filter((i) => i !== item);
+          Swal.fire(
+            "¡Eliminado!",
+            `El dispositivo "${item.modelo}" ha sido eliminado.`,
+            "success"
+          );
+        }
+      });
     },
     getIcon(type: string | undefined) {
       if (!type) {

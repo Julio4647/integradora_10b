@@ -20,7 +20,7 @@
         <!-- Enlaces de navegación centrados para pantallas medianas en adelante -->
         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-4">
           <a href="/dashboard" class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary">Inicio</a>
-          <a href="/dashboard/devices" class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary">Dispositivos</a>
+          <a href="/dashboard/devices" class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary">Lista de Dispositivos</a>
   
           <!-- Enlace de "Usuarios" con desglose -->
           <div class="relative">
@@ -50,7 +50,7 @@
   
           <!-- Menú desplegable para el icono de perfil -->
           <div v-if="dropdownOpen" @click.outside="closeDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
-            <a href="#" class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200">Perfil</a>
+            <a href="/dashboard/profile" class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200">Perfil</a>
             <a href="#" class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200">Cerrar Sesión</a>
           </div>
         </div>
@@ -59,7 +59,7 @@
       <!-- Menú hamburguesa desplegable para pantallas pequeñas -->
       <div v-if="mobileMenuOpen" class="md:hidden bg-white text-gray-800 space-y-2 p-4">
         <a href="/dashboard" class="block font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:text-gray-900">Inicio</a>
-        <a href="/dashboard/devices" class="block font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:text-gray-900">Dispositivos</a>
+        <a href="/dashboard/devices" class="block font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:text-gray-900">Lista de Dispositivos</a>
   
         <!-- Enlace de "Usuarios" con desglose en menú hamburguesa -->
         <div class="relative">
@@ -80,7 +80,7 @@
   
         <!-- Opciones de perfil y cerrar sesión en el menú hamburguesa -->
         <div class="mt-4 border-t border-gray-600 pt-2">
-          <a href="#" class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-700 rounded">Perfil</a>
+          <a href="/dashboard/profile" class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-700 rounded">Perfil</a>
           <a href="#" class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-700 rounded">Cerrar Sesión</a>
         </div>
       </div>
