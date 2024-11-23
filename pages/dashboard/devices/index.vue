@@ -3,79 +3,45 @@
   <div class="flex flex-col sm:flex-row justify-between items-center my-4 px-4">
     <h1 class="text-2xl sm:text-3xl font-bold">Lista de Dispositivos</h1>
     <button
-      @click="registerDevices"
-      class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary  mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+      @click="openRegisterModal"
+      class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
     >
       Registrar Nuevo Dispositivo
     </button>
   </div>
-
-  <!-- Grid de dispositivos -->
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-3 gap-3 mt-4"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4"
   >
     <div
       v-for="(item, index) in paginatedItems"
       :key="index"
-      class="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-sm"
+      class="bg-white rounded-lg shadow-lg p-6"
     >
-      <!-- Icono basado en el tipo de modelo -->
       <div class="flex items-center justify-center mb-4">
         <Icon :icon="getIcon(item.tipo)" class="w-12 h-12 text-gray-500" />
       </div>
-
-      <!-- Información del Activo -->
       <div>
-        <h3 class="text-lg sm:text-xl font-bold">{{ item.modelo }}</h3>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Marca:</strong>
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          {{ item.marca }}
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Número de serie:</strong>
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          {{ item.numeroSerie }}
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Descripción del problema:</strong>
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          {{ item.descripcionProblema }}
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Cliente propietario:</strong>
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          {{ item.clientePropietario }}
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Técnico a cargo:</strong>
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          {{ item.tecnicoACargo }}
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          <strong>Fecha de ingreso:</strong>
-        </p>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">
-          {{ item.fechaIngreso }}
-        </p>
+        <h3 class="text-lg sm:text-xl font-bold text-center">{{ item.modelo }}</h3>
+        <div class="grid grid-cols-2 text-center mt-3">
+          <div>
+            <p class="text-sm sm:text-base text-gray-600 mt-1">
+              <strong>Marca:</strong>
+            </p>
+            <p class="text-sm sm:text-base text-gray-600 mt-1">
+              {{ item.marca }}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm sm:text-base text-gray-600 mt-1">
+              <strong># de serie:</strong>
+            </p>
+            <p class="text-sm sm:text-base text-gray-600 mt-1">
+              {{ item.numeroSerie }}
+            </p>
+          </div>
+        </div>
       </div>
-
-      <!-- Botones de Editar y Eliminar -->
-      <div class="mt-4 flex justify-between">
-        <button
-          @click="editDevice(item)"
-          class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
-        >
-          <Icon
-            icon="material-symbols:box-edit-outline"
-            class="w-5 h-5 text-white"
-          />
-        </button>
+      <div class="mt-4 flex justify-center">
         <button
           @click="deleteDevice(item)"
           class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
@@ -88,8 +54,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Paginador -->
   <div class="flex justify-center mt-6">
     <button
       @click="prevPage"
@@ -107,19 +71,42 @@
       Siguiente
     </button>
   </div>
+
+  <RegisterDevicesModal
+    :isModalOpen="isRegisterModalOpen"
+    @close="isRegisterModalOpen = false"
+  />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import Swal from "sweetalert2";
-
 
 export default defineComponent({
   name: "devicesList",
   components: {
     NavHeader,
+  },
+  setup() {
+    const isModalOpen = ref(false);
+    const isRegisterModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const openRegisterModal = () => {
+      isRegisterModalOpen.value = true;
+    };
+
+    return {
+      isModalOpen,
+      isRegisterModalOpen,
+      openModal,
+      openRegisterModal,
+    };
   },
   data() {
     return {
@@ -129,10 +116,6 @@ export default defineComponent({
           modelo: "iPhone 13",
           marca: "Apple",
           numeroSerie: "ABC123456",
-          descripcionProblema: "Pantalla rota",
-          clientePropietario: "Juan Pérez",
-          tecnicoACargo: "Técnico 1",
-          fechaIngreso: "2024-10-01",
           tipo: "celular",
         },
         {
@@ -140,10 +123,6 @@ export default defineComponent({
           modelo: "MacBook Pro",
           marca: "Apple",
           numeroSerie: "DEF789012",
-          descripcionProblema: "Problemas de batería",
-          clientePropietario: "Ana López",
-          tecnicoACargo: "Técnico 2",
-          fechaIngreso: "2024-09-28",
           tipo: "laptop",
         },
         {
@@ -151,10 +130,6 @@ export default defineComponent({
           modelo: "Galaxy Watch 4",
           marca: "Samsung",
           numeroSerie: "GHI345678",
-          descripcionProblema: "No enciende",
-          clientePropietario: "Carlos García",
-          tecnicoACargo: "Técnico 3",
-          fechaIngreso: "2024-09-20",
           tipo: "smartwatch",
         },
         {
@@ -162,10 +137,6 @@ export default defineComponent({
           modelo: "JBL Flip 5",
           marca: "JBL",
           numeroSerie: "JKL901234",
-          descripcionProblema: "Sonido distorsionado",
-          clientePropietario: "Lucía Martínez",
-          tecnicoACargo: "Técnico 1",
-          fechaIngreso: "2024-10-05",
           tipo: "bocinas",
         },
         {
@@ -173,10 +144,6 @@ export default defineComponent({
           modelo: "PlayStation 5",
           marca: "Sony",
           numeroSerie: "MNO567890",
-          descripcionProblema: "Problemas de sobrecalentamiento",
-          clientePropietario: "Pedro Hernández",
-          tecnicoACargo: "Técnico 4",
-          fechaIngreso: "2024-10-07",
           tipo: "consola de videojuegos",
         },
         {
@@ -184,10 +151,6 @@ export default defineComponent({
           modelo: "Switch OLED",
           marca: "Nintendo",
           numeroSerie: "OPQ123456",
-          descripcionProblema: "Error en los Joy-Con",
-          clientePropietario: "Sofía Ortega",
-          tecnicoACargo: "Técnico 5",
-          fechaIngreso: "2024-10-10",
           tipo: "consola de videojuegos",
         },
         {
@@ -195,10 +158,6 @@ export default defineComponent({
           modelo: "Surface Pro 7",
           marca: "Microsoft",
           numeroSerie: "RST789012",
-          descripcionProblema: "Pantalla congelada",
-          clientePropietario: "Mario Fuentes",
-          tecnicoACargo: "Técnico 6",
-          fechaIngreso: "2024-10-12",
           tipo: "laptop",
         },
         {
@@ -206,10 +165,6 @@ export default defineComponent({
           modelo: "Google Pixel 6",
           marca: "Google",
           numeroSerie: "UVW345678",
-          descripcionProblema: "Problemas de carga",
-          clientePropietario: "Carla Nuñez",
-          tecnicoACargo: "Técnico 3",
-          fechaIngreso: "2024-10-15",
           tipo: "celular",
         },
         {
@@ -217,14 +172,10 @@ export default defineComponent({
           modelo: "Huawei P40",
           marca: "Huawei",
           numeroSerie: "XYZ901234",
-          descripcionProblema: "Sin señal",
-          clientePropietario: "Luis Santos",
-          tecnicoACargo: "Técnico 2",
-          fechaIngreso: "2024-10-18",
           tipo: "celular",
         },
       ],
-      itemsPerPage: 4,
+      itemsPerPage: 8, // Mostrar 8 elementos por página
       currentPage: 1,
     };
   },
@@ -239,13 +190,6 @@ export default defineComponent({
     },
   },
   methods: {
-    registerDevices() {
-      this.$router.push("devices/register");
-    },
-    editDevice(item: any) {
-      console.log("Editar dispositivo:", item);
-      this.$router.push("devices/[id]");
-    },
     deleteDevice(item: any) {
       Swal.fire({
         title: "¿Estás seguro?",
@@ -299,10 +243,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.w-12 {
-  width: 3rem;
-  height: 3rem;
-}
-</style>

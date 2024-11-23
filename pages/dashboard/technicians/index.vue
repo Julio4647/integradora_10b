@@ -6,7 +6,7 @@
     >
       <h1 class="text-2xl sm:text-3xl font-bold">Lista de Tecnicos</h1>
       <button
-        @click="registerTechnicians"
+        @click="openRegisterModal"
         class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
       >
         Registrar Nuevo Tecnico
@@ -38,7 +38,7 @@
           </div>
           <div class="flex gap-4 justify-center items-center">
             <button
-              @click="editTechnicians()"
+              @click="openModal()"
               class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
             >
               <Icon
@@ -78,6 +78,16 @@
         Siguiente
       </button>
     </div>
+    <EditTechnicianModal
+      v-if="isModalOpen"
+      :isModalOpen="isModalOpen"
+      @close="isModalOpen = false"
+    />
+    <RegisterTechnicianModal
+      v-if="isRegisterModalOpen"
+      :isModalOpen="isRegisterModalOpen"
+      @close="isRegisterModalOpen = false"
+    />
   </div>
 </template>
 
@@ -86,10 +96,14 @@ import { defineComponent, ref, computed } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import Swal from "sweetalert2";
+import RegisterTechnicianModal from "~/components/ModalTechnician/RegisterTechnicianModal.vue";
+import EditTechnicianModal from "~/components/ModalTechnician/EditTechnicianModal.vue";
 
 export default defineComponent({
   components: {
     NavHeader,
+    RegisterTechnicianModal,
+    EditTechnicianModal
   },
   name: "TechnicianList",
   methods: {
@@ -120,6 +134,16 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const isModalOpen = ref(false);
+    const isRegisterModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const openRegisterModal = () => {
+      isRegisterModalOpen.value = true;
+    };
 
     const registerTechnicians = () => {
       router.push("/dashboard/technicians/register");
@@ -235,6 +259,10 @@ export default defineComponent({
       prevPage,
       nextPage,
       registerTechnicians,
+      isModalOpen,
+      isRegisterModalOpen,
+      openModal,
+      openRegisterModal,
     };
   },
 });

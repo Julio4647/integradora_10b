@@ -6,7 +6,7 @@
     >
       <h1 class="text-2xl sm:text-3xl font-bold">Lista de Clientes</h1>
       <button
-        @click="registerClient"
+        @click="openRegisterModal"
         class="focus:outline-none font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
       >
         Registrar Nuevo Cliente
@@ -38,7 +38,7 @@
           </div>
           <div class="flex gap-4 justify-center items-center">
             <button
-              @click="editClient()"
+              @click="openModal()"
               class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
             >
               <Icon
@@ -78,6 +78,16 @@
         Siguiente
       </button>
     </div>
+    <EditClientModal
+      v-if="isModalOpen"
+      :isModalOpen="isModalOpen"
+      @close="isModalOpen = false"
+    />
+    <RegisterClientModal
+      v-if="isRegisterModalOpen"
+      :isModalOpen="isRegisterModalOpen"
+      @close="isRegisterModalOpen = false"
+    />
   </div>
 </template>
 
@@ -86,10 +96,14 @@ import { defineComponent, ref, computed } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import Swal from "sweetalert2";
+import RegisterClientModal from "~/components/ModalClient/RegisterClientModal.vue";
+import EditClientModal from "~/components/ModalClient/EditClientModal.vue";
 
 export default defineComponent({
   components: {
     NavHeader,
+    RegisterClientModal,
+    EditClientModal
   },
   methods: {
     registerClient() {
@@ -126,6 +140,18 @@ export default defineComponent({
   },
   name: "TechnicianList",
   setup() {
+    const isModalOpen = ref(false);
+    const selectedAdminId = ref(null);
+    const isRegisterModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const openRegisterModal = () => {
+      isRegisterModalOpen.value = true;
+    };
+
     const clients = ref([
       {
         id: 1,
@@ -235,6 +261,11 @@ export default defineComponent({
       paginatedClients,
       prevPage,
       nextPage,
+      isModalOpen,
+      isRegisterModalOpen,
+      selectedAdminId,
+      openModal,
+      openRegisterModal,
     };
   },
 });

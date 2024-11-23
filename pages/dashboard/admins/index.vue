@@ -6,7 +6,7 @@
     >
       <h1 class="text-2xl sm:text-3xl font-bold">Lista de Administradores</h1>
       <button
-        @click="registerAdmin"
+        @click="openRegisterModal"
         class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
       >
         Registrar Nuevo Administrador
@@ -38,7 +38,7 @@
           </div>
           <div class="flex gap-4 justify-center items-center">
             <button
-              @click="editAdmin(admin.id)"
+              @click="openModal()"
               class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
             >
               <Icon
@@ -78,6 +78,17 @@
         Siguiente
       </button>
     </div>
+
+    <EditAdminModal
+      v-if="isModalOpen"
+      :isModalOpen="isModalOpen"
+      @close="isModalOpen = false"
+    />
+    <RegisterAdminModal
+      v-if="isRegisterModalOpen"
+      :isModalOpen="isRegisterModalOpen"
+      @close="isRegisterModalOpen = false"
+    />
   </div>
 </template>
 
@@ -86,10 +97,14 @@ import { defineComponent, ref, computed } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import Swal from "sweetalert2";
+import EditAdminModal from "~/components/ModalAdmin/EditAdminModal.vue";
+import RegisterAdminModal from "~/components/ModalAdmin/RegisterAdminModal.vue";
 
 export default defineComponent({
   components: {
     NavHeader,
+    EditAdminModal,
+    RegisterAdminModal,
   },
   name: "AdminList",
   methods: {
@@ -132,6 +147,18 @@ export default defineComponent({
     },
   },
   setup() {
+    const isModalOpen = ref(false);
+    const selectedAdminId = ref(null);
+    const isRegisterModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const openRegisterModal = () => {
+      isRegisterModalOpen.value = true;
+    };
+
     const admins = ref([
       {
         id: 1,
@@ -208,19 +235,16 @@ export default defineComponent({
     const itemsPerPage = 4;
     const currentPage = ref(1);
 
-    // Calcular el número total de páginas
     const totalPages = computed(() =>
       Math.ceil(admins.value.length / itemsPerPage)
     );
 
-    // Obtener los administradores que se mostrarán en la página actual
     const paginatedAdmins = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage;
       const end = start + itemsPerPage;
       return admins.value.slice(start, end);
     });
 
-    // Función para ir a la página anterior
     const prevPage = () => {
       if (currentPage.value > 1) {
         currentPage.value--;
@@ -241,6 +265,11 @@ export default defineComponent({
       paginatedAdmins,
       prevPage,
       nextPage,
+      isModalOpen,
+      isRegisterModalOpen,
+      selectedAdminId,
+      openModal,
+      openRegisterModal,
     };
   },
 });
