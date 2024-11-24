@@ -116,8 +116,10 @@
 import { defineComponent, ref } from "vue";
 import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
 import { useRouter } from "vue-router";
+import { useRuntimeConfig } from "#app";
+import axios from "axios";
 
-// Definir reglas
+
 defineRule("required", (value: string) => {
   return !!value || "Este campo es obligatorio";
 });
@@ -142,6 +144,9 @@ export default defineComponent({
   setup(props, { emit }) {
     const password = ref("");
     const router = useRouter();
+    const config = useRuntimeConfig();
+
+    console.log("API URL desde .env:", config.public.apiUrl);
 
     const confirmPasswordRule = (value: string) => {
       if (value === password.value) return true;
