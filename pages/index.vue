@@ -52,7 +52,7 @@
           <Field
             name="password"
             as="input"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             id="password"
             class="w-full px-10 py-2 border rounded"
             :class="{ 'border-red-500': errors.password }"
@@ -60,6 +60,20 @@
             rules="required|min:6"
           />
           <ErrorMessage name="password" class="text-red-500 text-sm" />
+          <button
+            type="button"
+            @click="togglePasswordVisibility"
+            class="absolute right-2 top-3 text-blue-600 hover:text-gray-600"
+          >
+            <Icon
+              :icon="
+                showPassword
+                  ? 'material-symbols:visibility'
+                  : 'material-symbols:visibility-off'
+              "
+              size="24"
+            />
+          </button>
         </div>
 
         <div class="text-center justify-center mt-4">
@@ -119,7 +133,6 @@ import { useRouter } from "vue-router";
 import { useRuntimeConfig } from "#app";
 import axios from "axios";
 
-
 defineRule("required", (value: string) => {
   return !!value || "Este campo es obligatorio";
 });
@@ -145,6 +158,11 @@ export default defineComponent({
     const password = ref("");
     const router = useRouter();
     const config = useRuntimeConfig();
+    const showPassword = ref(false);
+
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
 
     console.log("API URL desde .env:", config.public.apiUrl);
 
@@ -170,7 +188,13 @@ export default defineComponent({
       router.push("/forgotPassword");
     };
 
-    return { password, loginSystem, goToForgotPassword };
+    return {
+      password,
+      loginSystem,
+      goToForgotPassword,
+      togglePasswordVisibility,
+      showPassword,
+    };
   },
 });
 </script>

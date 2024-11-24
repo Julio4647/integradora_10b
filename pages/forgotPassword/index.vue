@@ -105,11 +105,10 @@
           icon: "success",
           confirmButtonText: "Aceptar",
         });
-        router.push("/");
+        router.push("/forgotPassword/update-password");
       } catch (error) {
         console.error("Error al enviar el correo:", error);
 
-        // Mostrar alerta de error
         await Swal.fire({
           title: "Error",
           text: "No se pudo enviar el correo. Inténtalo nuevamente.",
