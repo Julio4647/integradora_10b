@@ -194,6 +194,8 @@ export default defineComponent({
           const allowedRoles = ["SUPERADMIN", "ADMIN"];
           const userRole = data.userInfo?.authorities?.[0]?.authority;
           localStorage.setItem("role", userRole);
+          localStorage.setItem('user', JSON.stringify(response.data.data.userInfo));
+          localStorage.setItem('loginInfo', JSON.stringify(response.data.data.loginInfo));
 
           if (!allowedRoles.includes(userRole)) {
             Swal.fire({

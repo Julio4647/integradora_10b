@@ -322,9 +322,11 @@ export default defineComponent({
     };
 
     const handleLogout = () => {
-      // Opcional: Limpiar tokens o datos del usuario en el almacenamiento
       router.push("/");
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("loginInfo");
     };
 
     return {

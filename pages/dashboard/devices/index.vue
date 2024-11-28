@@ -49,7 +49,7 @@
               </div>
             </div>
           </div>
-          <div class="mt-4 flex justify-center">
+          <!--<div class="mt-4 flex justify-center">
             <button
               @click="deleteDevice(item)"
               class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
@@ -60,6 +60,7 @@
               />
             </button>
           </div>
+          -->
         </div>
       </div>
     </div>

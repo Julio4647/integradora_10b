@@ -32,7 +32,7 @@
             :key="admin.id"
             class="p-6 border border-gray-300 rounded-lg w-full max-w mx-auto bg-white shadow-lg text-center"
           >
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div class="flex flex-col">
                 <h1 class="font-semibold text-gray-700">Nombre</h1>
                 <p class="text-gray-600">{{ admin.name }}</p>
@@ -49,7 +49,7 @@
                 <h1 class="font-semibold text-gray-700">Email</h1>
                 <p class="text-gray-600">{{ admin.email }}</p>
               </div>
-              <div class="flex gap-4 justify-center items-center">
+              <!--<div class="flex gap-4 justify-center items-center">
                 <button
                   @click="openModal()"
                   class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
@@ -69,6 +69,7 @@
                   />
                 </button>
               </div>
+              -->
             </div>
           </div>
         </div>

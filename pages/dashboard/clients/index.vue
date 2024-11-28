@@ -29,7 +29,7 @@
           :key="client.id"
           class="p-6 border border-gray-300 rounded-lg w-full max-w mx-auto bg-white shadow-lg text-center"
         >
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div class="flex flex-col">
               <h1 class="font-semibold text-gray-700">Nombre</h1>
               <p class="text-gray-600">{{ client.name }}</p>
@@ -46,7 +46,7 @@
               <h1 class="font-semibold text-gray-700">Email</h1>
               <p class="text-gray-600">{{ client.email }}</p>
             </div>
-            <div class="flex gap-4 justify-center items-center">
+            <!--<div class="flex gap-4 justify-center items-center">
               <button
                 @click="openModal()"
                 class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
@@ -65,7 +65,7 @@
                   class="w-5 h-5 text-white"
                 />
               </button>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -129,7 +129,6 @@ export default defineComponent({
   },
   methods: {
     deleteClient() {
-      // Mostrar alerta de confirmación
       Swal.fire({
         title: "¿Estás seguro?",
         text: "¡No podrás recuperar esta información!",
@@ -140,9 +139,6 @@ export default defineComponent({
         confirmButtonText: "Sí, eliminar",
       }).then((result) => {
         if (result.isConfirmed) {
-          // Aquí va la lógica para eliminar el cliente
-
-          // Mostrar alerta de éxito después de la eliminación
           Swal.fire({
             title: "¡Eliminado!",
             text: "El cliente ha sido eliminado.",
