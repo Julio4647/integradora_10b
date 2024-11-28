@@ -132,6 +132,7 @@ import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
 import { useRouter } from "vue-router";
 import { useRuntimeConfig } from "#app";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 defineRule("required", (value: string) => {
   return !!value || "Este campo es obligatorio";
@@ -158,13 +159,12 @@ export default defineComponent({
     const password = ref("");
     const router = useRouter();
     const config = useRuntimeConfig();
+    const ApiUrl = config.public.apiUrl;
     const showPassword = ref(false);
 
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
     };
-
-    console.log("API URL desde .env:", config.public.apiUrl);
 
     const confirmPasswordRule = (value: string) => {
       if (value === password.value) return true;
@@ -173,15 +173,96 @@ export default defineComponent({
 
     defineRule("confirmPasswordRule", confirmPasswordRule);
 
-    const loginSystem = (values: Record<string, any>) => {
-      console.log("Usuario registrado con datos:", values);
-      if (values.email && values.password) {
-        console.log("Redirigiendo al dashboard...");
-        router.push("/dashboard");
-      } else {
-        console.log("Campos obligatorios incompletos.");
+    const loginSystem = async (values: Record<string, any>) => {
+      try {
+        const response = await axios.post(
+          `${ApiUrl}/auth/login`,
+          {
+            email: values.email,
+            password: values.password,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const { data, error, message } = response.data;
+
+        if (!error) {
+          const allowedRoles = ["SUPERADMIN", "ADMIN"];
+          const userRole = data.userInfo?.authorities?.[0]?.authority;
+          localStorage.setItem("role", userRole);
+
+          if (!allowedRoles.includes(userRole)) {
+            Swal.fire({
+              icon: "error",
+              title: "Acceso denegado",
+              text: "No tiene permiso para iniciar sesión en este sistema.",
+            });
+            return;
+          }
+
+          if (message === "User must change password") {
+            router.push(
+              `/change-password?email=${encodeURIComponent(values.email)}`
+            );
+          } else {
+            localStorage.setItem("token", data.loginInfo.token);
+            console.log(response.data);
+            router.push("/dashboard");
+          }
+        } else {
+          console.error("Error en inicio de sesión:", message);
+          Swal.fire({
+            icon: "error",
+            title: "Error de inicio de sesión",
+            text: message || "Credenciales incorrectas",
+          });
+        }
+      } catch (error: any) {
+        console.error("Error al conectar con el backend:", error);
+
+        if (error.response) {
+          if (error.response.status === 401) {
+            // Handle Unauthorized Error (401)
+            Swal.fire({
+              icon: "error",
+              title: "Credenciales incorrectas",
+              text: "El email o la contraseña son incorrectos. Intenta de nuevo.",
+            });
+          } else if (
+            error.response.status === 403 &&
+            error.response.data.detail === "User must change password"
+          ) {
+            Swal.fire({
+              icon: "warning",
+              title: "Contraseña requerida",
+              text: "Debe cambiar su contraseña antes de continuar.",
+            });
+            router.push("/change-password");
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Error del servidor",
+              text: error.response.data?.message || "Intente más tarde",
+            });
+          }
+        } else if (error.request) {
+          Swal.fire({
+            icon: "error",
+            title: "Error de conexión",
+            text: "No se pudo conectar al servidor. Verifica tu conexión o intenta más tarde.",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error inesperado",
+            text: "Ocurrió un error inesperado. Por favor intenta más tarde.",
+          });
+        }
       }
-      emit("close");
     };
 
     const goToForgotPassword = () => {

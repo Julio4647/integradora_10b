@@ -16,10 +16,11 @@
       <!-- Form with VeeValidate -->
       <Form @submit="submitForm" v-slot="{ errors }">
         <!-- Form Fields -->
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
-            <label for="firstName" class="block text-md font-medium text-gray-700"
+            <label
+              for="firstName"
+              class="block text-md font-medium text-gray-700"
               >Nombre</label
             >
             <Field
@@ -31,6 +32,7 @@
               :class="{ 'border-red-500': errors.firstName }"
               placeholder="Ingresar nombre"
               rules="required"
+              v-model="firstName"
             />
             <ErrorMessage name="firstName" class="text-red-500 text-sm" />
           </div>
@@ -49,6 +51,7 @@
               :class="{ 'border-red-500': errors.lastName }"
               placeholder="Ingresar Apellidos"
               rules="required"
+              v-model="lastName"
             />
             <ErrorMessage name="lastName" class="text-red-500 text-sm" />
           </div>
@@ -65,13 +68,12 @@
               :class="{ 'border-red-500': errors.email }"
               placeholder="Ingresar Correo electronico"
               rules="required|email"
+              v-model="email"
             />
             <ErrorMessage name="email" class="text-red-500 text-sm" />
           </div>
           <div>
-            <label
-              for="phone"
-              class="block text-md font-medium text-gray-700"
+            <label for="phone" class="block text-md font-medium text-gray-700"
               >Telefono</label
             >
             <Field
@@ -83,6 +85,7 @@
               :class="{ 'border-red-500': errors.phone }"
               placeholder="Ingresar Telefono"
               rules="required"
+              v-model="phone"
             />
             <ErrorMessage name="phone" class="text-red-500 text-sm" />
           </div>
@@ -101,26 +104,9 @@
               :class="{ 'border-red-500': errors.password }"
               placeholder="Ingresar Contraseña"
               rules="required|min:6"
+              v-model="password"
             />
             <ErrorMessage name="password" class="text-red-500 text-sm" />
-          </div>
-          <div class="md:col-span-2">
-            <label
-              for="address"
-              class="block text-md font-medium text-gray-700"
-              >Direccion</label
-            >
-            <Field
-              name="address"
-              as="input"
-              type="text"
-              id="address"
-              class="w-full px-3 py-2 border rounded"
-              :class="{ 'border-red-500': errors.address }"
-              placeholder="Ingresar Direccion"
-              rules="required"
-            />
-            <ErrorMessage name="address" class="text-red-500 text-sm" />
           </div>
         </div>
 
@@ -140,6 +126,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
+import { useRouter } from "vue-router"; // Importa useRouter
 import Swal from "sweetalert2";
 
 // Validation rules
@@ -175,20 +162,41 @@ export default defineComponent({
     const email = ref("");
     const phone = ref("");
     const password = ref("");
-    const address = ref("");
+    const config = useRuntimeConfig();
+    const ApiUrl = config.public.apiUrl;
 
     const submitForm = async () => {
       try {
-        // Simulated success response
-        const response = true;
+        const payload = {
+          name: firstName.value,
+          lastname: lastName.value,
+          email: email.value,
+          phone: phone.value,
+          password: password.value,
+        };
 
-        if (response) {
+        const response = await fetch(`${ApiUrl}/auth/signup/admin`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result) {
           await Swal.fire({
             icon: "success",
             title: "Administrador Registrado!",
-            text: "El administrador se a registrado exitosamente",
+            text: "El administrador se ha registrado exitosamente",
           });
           emit("close");
+          emit("refresh"); // Emitimos el evento para actualizar la lista
         } else {
           await Swal.fire({
             icon: "error",
@@ -206,10 +214,7 @@ export default defineComponent({
       }
     };
 
-    return { firstName, lastName, email, phone, password, address, submitForm };
+    return { firstName, lastName, email, phone, password, submitForm };
   },
 });
 </script>
-
-<style scoped>
-</style>

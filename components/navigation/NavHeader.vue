@@ -158,10 +158,11 @@
             >Perfil</a
           >
           <a
-            href="#"
+            @click.prevent="handleLogout"
             class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
-            >Cerrar Sesión</a
           >
+            Cerrar Sesión
+          </a>
         </div>
       </div>
     </nav>
@@ -274,10 +275,11 @@
           >Perfil</a
         >
         <a
-          href="#"
-          class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-700 rounded"
-          >Cerrar Sesión</a
+          @click.prevent="handleLogout"
+          class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
         >
+          Cerrar Sesión
+        </a>
       </div>
     </div>
   </div>
@@ -286,6 +288,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
+import { useRouter } from "vue-router"; // Importar useRouter
 
 export default defineComponent({
   name: "NavHeader",
@@ -294,6 +297,8 @@ export default defineComponent({
     const dropdownOpen = ref(false);
     const mobileMenuOpen = ref(false);
     const dropdownReparacionesOpen = ref(false);
+
+    const router = useRouter(); // Instancia del router
 
     const toggleDropdownUsuarios = () => {
       dropdownUsuariosOpen.value = !dropdownUsuariosOpen.value;
@@ -316,6 +321,12 @@ export default defineComponent({
       mobileMenuOpen.value = !mobileMenuOpen.value;
     };
 
+    const handleLogout = () => {
+      // Opcional: Limpiar tokens o datos del usuario en el almacenamiento
+      router.push("/");
+      localStorage.removeItem("role");
+    };
+
     return {
       dropdownUsuariosOpen,
       dropdownReparacionesOpen,
@@ -326,6 +337,7 @@ export default defineComponent({
       closeDropdown,
       toggleMobileMenu,
       toggleDropdownReparaciones,
+      handleLogout, // Exponer el método
     };
   },
 });

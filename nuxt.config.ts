@@ -6,4 +6,7 @@ export default defineNuxtConfig({
       apiUrl: process.env.API_URL,
     },
   },
+  css: [
+    'vue-multiselect/dist/vue-multiselect.min.css'
+  ]
 });

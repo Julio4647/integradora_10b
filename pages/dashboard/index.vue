@@ -30,23 +30,21 @@
   </div>
 </template>
 
+
 <script lang="ts">
 import { defineComponent } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
+import { useAuthStore } from "~/stores/user";
 
 export default defineComponent({
   components: {
-    NavHeader, // Registrar el componente
+    NavHeader, 
   },
   methods: {
-    getUsers() {
-      this.$router.push("/users/viewUsers");
-    },
   },
   setup() {
+
     return {
-      powerPointUrl:
-        "https://1drv.ms/p/s!An6SQ6Ft7VtOq-9GohJx4gExy8QR3w?e=HePPJt",
     };
   },
 });
