@@ -1,10 +1,10 @@
 <template>
   <div>
     <!-- Navbar -->
-    <nav class="bg-white h-16 flex items-center justify-between px-4 shadow-md">
+    <nav class="bg-white h-17 flex items-center justify-between px-4 shadow-md">
       <!-- Logo -->
       <div class="text-white text-xl font-bold">
-        <img src="" alt="Logo" class="h-10 inline-block mr-2" />
+        <img src="../../assets/logo (3).png" alt="Logo" srcset="" class="w-24 h-24">
       </div>
 
       <!-- Menú hamburguesa para pantallas pequeñas -->

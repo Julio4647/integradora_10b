@@ -7,20 +7,7 @@
       class="relative p-10 border border-gray-600 rounded-lg w-full max-w-md z-10"
     >
       <div class="flex justify-center mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-16 w-16 text-gray-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 3h18M3 7h18M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"
-          />
-        </svg>
+        <img src="../assets/logo (3).png" alt="" srcset="" class="w-48 h-48">
       </div>
 
       <Form @submit="loginSystem" v-slot="{ errors }">
