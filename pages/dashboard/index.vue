@@ -37,6 +37,9 @@
 </template>
 
 <script lang="ts">
+definePageMeta({
+  middleware: 'auth', // Asigna el middleware 'auth' a esta página
+});
 import { defineComponent, ref, onMounted } from "vue";
 import axios from "axios";
 import NavHeader from "~/components/navigation/NavHeader.vue";

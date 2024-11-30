@@ -110,6 +110,11 @@ import NavHeader from "~/components/navigation/NavHeader.vue";
 import RegisterTechnicianModal from "~/components/ModalTechnician/RegisterTechnicianModal.vue";
 import EditTechnicianModal from "~/components/ModalTechnician/EditTechnicianModal.vue";
 import axios from "axios";
+import { definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: "auth", // Aplica el middleware 'auth' a esta página
+});
 
 interface Technician {
   id: number;

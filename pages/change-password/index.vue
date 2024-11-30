@@ -3,11 +3,14 @@
     class="relative w-full min-h-screen flex items-center justify-center bg-white overflow-hidden"
   >
     <!-- Card de recuperación de contraseña -->
-    <div
-      class="relative p-10 border border-gray-600 rounded-lg w-full max-w-md z-10"
-    >
+    <div class="relative p-10 rounded-lg w-full max-w-md z-10">
       <div class="flex justify-center mb-6">
-        <img src="../assets/logo (3).png" alt="" srcset="" class="w-48 h-48" />
+        <img
+          src="../../assets/logo (3).png"
+          alt=""
+          srcset=""
+          class="w-48 h-48"
+        />
       </div>
 
       <Form @submit="updatePasswordWithToken" v-slot="{ errors }">
@@ -18,18 +21,12 @@
             size="30"
             class="absolute left-2 top-1 text-gray-400"
           />
-          <Field
-            name="email"
-            as="input"
-            type="email"
+          <p
             id="email"
-            class="w-full px-10 py-2 border rounded"
-            :class="{ 'border-red-500': errors.email }"
-            placeholder="Correo electrónico"
-            :value="email"
-            rules="required|email"
-          />
-          <ErrorMessage name="email" class="text-red-500 text-sm" />
+            class="w-full px-10 py-2 border rounded bg-gray-100 text-gray-700"
+          >
+            {{ email }}
+          </p>
         </div>
 
         <!-- Old Password -->
@@ -55,7 +52,11 @@
             class="absolute right-2 top-3 text-blue-600 hover:text-gray-600"
           >
             <Icon
-              :icon="showOldPassword ? 'material-symbols:visibility-off' : 'material-symbols:visibility'"
+              :icon="
+                showOldPassword
+                  ? 'material-symbols:visibility-off'
+                  : 'material-symbols:visibility'
+              "
               size="24"
             />
           </button>
@@ -85,7 +86,11 @@
             class="absolute right-2 top-3 text-blue-600 hover:text-gray-600"
           >
             <Icon
-              :icon="showNewPassword ? 'material-symbols:visibility-off' : 'material-symbols:visibility'"
+              :icon="
+                showNewPassword
+                  ? 'material-symbols:visibility-off'
+                  : 'material-symbols:visibility'
+              "
               size="24"
             />
           </button>
@@ -102,6 +107,28 @@
           </button>
         </div>
       </Form>
+    </div>
+    <div
+      class="absolute top-0 right-0 w-[30vw] aspect-square bg-gray-900 rounded-bl-full animate-wave-1"
+    >
+      <div
+        class="absolute top-0 right-0 w-[25vw] aspect-square bg-blue-950 rounded-bl-full"
+      >
+        <div
+          class="absolute top-0 right-0 w-[20vw] aspect-square bg-blue-800 rounded-bl-full"
+        ></div>
+      </div>
+    </div>
+    <div
+      class="absolute bottom-0 left-0 w-[30vw] aspect-square bg-gray-900 rounded-tr-full animate-wave-2"
+    >
+      <div
+        class="absolute bottom-0 left-0 w-[25vw] aspect-square bg-blue-950 rounded-tr-full"
+      >
+        <div
+          class="absolute bottom-0 left-0 w-[20vw] aspect-square bg-blue-800 rounded-tr-full"
+        ></div>
+      </div>
     </div>
   </div>
 </template>
@@ -127,14 +154,16 @@ defineRule("email", (value: string) => {
 
 defineRule("min", (value: string, [length]: [number]) => {
   return (
-    (value && value.length >= length) || `Debe tener al menos ${length} caracteres`
+    (value && value.length >= length) ||
+    `Debe tener al menos ${length} caracteres`
   );
 });
 
 defineRule("noJsonOrSql", (value: string) => {
   const jsonRegex = /{.*}|:|,/; // Detecta patrones de JSON
-  const sqlRegex = /(select|insert|delete|update|drop|union|create|alter|where|--|' or '|;|--)/i; // Mejora para inyecciones SQL
-  
+  const sqlRegex =
+    /(select|insert|delete|update|drop|union|create|alter|where|--|' or '|;|--)/i; // Mejora para inyecciones SQL
+
   if (jsonRegex.test(value)) {
     return "No se permiten estructuras JSON en este campo";
   }
@@ -143,8 +172,6 @@ defineRule("noJsonOrSql", (value: string) => {
   }
   return true;
 });
-
-
 
 export default defineComponent({
   components: {
@@ -172,7 +199,7 @@ export default defineComponent({
     const updatePasswordWithToken = async (values: Record<string, any>) => {
       try {
         const payload = {
-          email: values.email,
+          email,
           oldPassword: values.oldPassword,
           newPassword: values.newPassword,
         };

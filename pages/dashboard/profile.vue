@@ -40,6 +40,11 @@
 import { defineComponent, onMounted, ref } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
+import { definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: "auth", // Aplica el middleware 'auth' a esta página
+});
 
 interface Authority {
   authority: string;

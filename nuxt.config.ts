@@ -8,5 +8,9 @@ export default defineNuxtConfig({
   },
   css: [
     'vue-multiselect/dist/vue-multiselect.min.css'
-  ]
+  ],
+  plugins: [
+    "~/plugins/pinia", // Pinia debe inicializarse antes de cualquier plugin que use el store
+    "~/plugins/auth.client",
+  ],
 });

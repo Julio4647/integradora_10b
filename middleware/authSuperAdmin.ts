@@ -17,13 +17,13 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // Logs para depuración
   console.log("Estado del usuario en middleware:", authStore.$state);
 
-  const allowedRoles = ["SUPERADMIN", "ADMIN"];
-  const isAuthenticated = authStore.user && allowedRoles.includes(authStore.role || "");
+  // Validación estricta para SUPERADMIN
+  const isSuperAdmin = authStore.user && authStore.role === "SUPERADMIN";
 
-  if (!isAuthenticated) {
-    console.warn("Usuario no autenticado o sin permisos. Redirigiendo...");
+  if (!isSuperAdmin) {
+    console.warn("Acceso denegado: solo usuarios SUPERADMIN pueden acceder a esta vista. Redirigiendo...");
     return window.location.replace("/errors/401");
   }
 
-  console.log("El usuario tiene permisos. Permitiendo acceso.");
+  console.log("Usuario SUPERADMIN verificado. Permitiendo acceso.");
 });

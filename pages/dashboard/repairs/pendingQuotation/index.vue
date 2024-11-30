@@ -109,6 +109,11 @@ import { defineComponent, ref, computed, onMounted } from "vue";
 import axios from "axios";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import RegisterQuotationModal from "~/components/ModalQuotation/RegisterQuotationModal.vue";
+import { definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: "auth", // Aplica el middleware 'auth' a esta página
+});
 
 interface Repair {
   id: number;

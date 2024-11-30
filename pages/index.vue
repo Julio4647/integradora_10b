@@ -5,10 +5,15 @@
     <!-- Card de login -->
     <div class="relative p-10 rounded-lg w-full max-w-md z-10">
       <div class="flex justify-center mb-6">
-        <img src="../assets/logo (3).png" alt="" srcset="" class="w-48 h-48" />
+        <img src="../assets/logo (3).png" alt="Logo" class="w-48 h-48" />
       </div>
 
-      <Form @submit="loginSystem" v-slot="{ errors }">
+      <!-- Formulario de login -->
+      <Form
+        :initialValues="{ email: '', password: '' }"
+        @submit="loginSystem"
+        v-slot="{ errors }"
+      >
         <div class="relative mb-4">
           <Icon
             name="material-symbols:alternate-email"
@@ -82,8 +87,6 @@
         </div>
       </Form>
     </div>
-
-    <!-- Círculos responsivos parte superior derecha -->
     <div
       class="absolute top-0 right-0 w-[30vw] aspect-square bg-gray-900 rounded-bl-full animate-wave-1"
     >
@@ -95,8 +98,6 @@
         ></div>
       </div>
     </div>
-
-    <!-- Círculos responsivos parte inferior izquierda -->
     <div
       class="absolute bottom-0 left-0 w-[30vw] aspect-square bg-gray-900 rounded-tr-full animate-wave-2"
     >
@@ -118,21 +119,30 @@ import { useRouter } from "vue-router";
 import { useRuntimeConfig } from "#app";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuthStore } from "~/stores/user";
 
-defineRule("required", (value: string) => {
-  return !!value || "Este campo es obligatorio";
-});
-defineRule("email", (value: string) => {
-  return (
+// Define los valores esperados en el formulario
+interface LoginFormValues {
+  email: string;
+  password: string;
+}
+
+// Define reglas de validación
+defineRule(
+  "required",
+  (value: string) => !!value || "Este campo es obligatorio"
+);
+defineRule(
+  "email",
+  (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "El correo debe ser válido"
-  );
-});
-defineRule("min", (value: string, [length]: [number]) => {
-  return (
+);
+defineRule(
+  "min",
+  (value: string, [length]: [number]) =>
     value.length >= length ||
     `Este campo debe tener al menos ${length} caracteres`
-  );
-});
+);
 
 export default defineComponent({
   components: {
@@ -140,125 +150,103 @@ export default defineComponent({
     Field,
     ErrorMessage,
   },
-  setup(props, { emit }) {
-    const password = ref("");
+  setup() {
+    const showPassword = ref(false);
     const router = useRouter();
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
-    const showPassword = ref(false);
+    const authStore = useAuthStore();
 
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
     };
 
-    const confirmPasswordRule = (value: string) => {
-      if (value === password.value) return true;
-      return "Las contraseñas no coinciden";
-    };
-
-    defineRule("confirmPasswordRule", confirmPasswordRule);
-
     const loginSystem = async (values: Record<string, any>) => {
       try {
-        const response = await axios.post(
-          `${ApiUrl}/auth/login`,
-          {
-            email: values.email,
-            password: values.password,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // Realiza la petición al backend
+        const response = await axios.post(`${ApiUrl}/auth/login`, values, {
+          headers: { "Content-Type": "application/json" },
+        });
 
-        const { data, error, message } = response.data;
+        // Inspecciona la respuesta para asegurarte de que es válida
+        console.log("Respuesta del servidor:", response.data);
 
-        if (!error) {
-          const allowedRoles = ["SUPERADMIN", "ADMIN"];
-          const userRole = data.userInfo?.authorities?.[0]?.authority;
+        // Extrae los datos desde la respuesta
+        const userInfo = response.data.data?.userInfo;
+        const loginInfo = response.data.data?.loginInfo;
+        const error = response.data.error;
 
-          if (!allowedRoles.includes(userRole)) {
-            Swal.fire({
-              icon: "error",
-              title: "Acceso denegado",
-              text: "No tiene permiso para iniciar sesión en este sistema.",
-            });
-            return;
-          }
+        if (error || !userInfo || !loginInfo) {
+          throw new Error("Respuesta inválida del servidor");
+        }
 
-          // Guarda la información del usuario y token
-          localStorage.setItem("role", userRole);
-          localStorage.setItem("user", JSON.stringify(data.userInfo));
-          localStorage.setItem("loginInfo", JSON.stringify(data.loginInfo));
-          localStorage.setItem("token", data.loginInfo.token);
+        const { id, name, lastname, email, authorities } = userInfo;
+        const token = loginInfo.token;
+        const role = authorities[0]?.authority;
 
-          // Si el usuario debe cambiar su contraseña, redirige a la página correspondiente
-          if (message === "User must change password") {
-            router.push(
-              `/change-password?email=${encodeURIComponent(values.email)}`
-            );
-          } else {
-            // Redirige al dashboard
-            router.push("/dashboard");
-          }
-        } else {
-          console.error("Error en inicio de sesión:", message);
+        // Verifica si el usuario tiene permisos
+        if (!["SUPERADMIN", "ADMIN"].includes(role)) {
           Swal.fire({
             icon: "error",
-            title: "Error de inicio de sesión",
-            text: message || "Credenciales incorrectas",
+            title: "Acceso denegado",
+            text: "No tienes permiso para acceder al sistema.",
           });
+          return;
         }
+
+        // Guarda el usuario en el store
+        authStore.setUser({
+          user: { id, name, lastname, email },
+          role,
+          token,
+        });
+
+        // Guarda la información en localStorage (solo en cliente)
+        if (process.client) {
+          localStorage.setItem("user", JSON.stringify(userInfo));
+          localStorage.setItem("role", role);
+          localStorage.setItem("token", token);
+        }
+
+        // Muestra un mensaje de éxito y redirige al dashboard
+        Swal.fire({
+          icon: "success",
+          title: "Inicio de sesión exitoso",
+          text: `Bienvenido, ${name} ${lastname}!`,
+        });
+
+        router.push("/dashboard");
       } catch (error: any) {
-        console.error("Error al conectar con el backend:", error);
+        console.error("Error en inicio de sesión:", error);
 
-        if (error.response) {
-          if (error.response.status === 401) {
-            Swal.fire({
-              icon: "error",
-              title: "Credenciales incorrectas",
-              text: "El email o la contraseña son incorrectos. Intenta de nuevo.",
-            });
-          } else if (error.response.status === 403) {
-            const allowedRoles = ["SUPERADMIN", "ADMIN"];
-            const userRole = error.response.data?.userInfo?.authorities?.[0]?.authority;
-
-            if (allowedRoles.includes(userRole)) {
-              Swal.fire({
-                icon: "warning",
-                title: "Contraseña requerida",
-                text: "Debe cambiar su contraseña antes de continuar.",
-              });
+        if (error.response && error.response.status === 403) {
+          Swal.fire({
+            icon: "warning",
+            title: "Cambio de contraseña requerido",
+            text: "Debe cambiar su contraseña antes de continuar.",
+            confirmButtonText: "Actualizar contraseña",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Redirige al usuario a la página de actualización de contraseña
               router.push(
                 `/change-password?email=${encodeURIComponent(values.email)}`
               );
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Acceso denegado",
-                text: "No tiene permiso para cambiar su contraseña en este sistema.",
-              });
             }
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Error del servidor",
-              text: error.response.data?.message || "Intente más tarde",
-            });
-          }
-        } else if (error.request) {
+          });
+        } else if (error.response && error.response.status === 401) {
           Swal.fire({
             icon: "error",
-            title: "Error de conexión",
-            text: "No se pudo conectar al servidor. Verifica tu conexión o intenta más tarde.",
+            title: "Credenciales incorrectas",
+            text: "El email o la contraseña son incorrectos. Intenta de nuevo.",
           });
         } else {
+          // Manejo genérico para otros errores
           Swal.fire({
             icon: "error",
-            title: "Error inesperado",
-            text: "Ocurrió un error inesperado. Por favor intenta más tarde.",
+            title: "Error de inicio de sesión",
+            text:
+              error.response?.data?.message ||
+              "Revisa tus credenciales e intenta nuevamente.",
           });
         }
       }
@@ -269,7 +257,6 @@ export default defineComponent({
     };
 
     return {
-      password,
       loginSystem,
       goToForgotPassword,
       togglePasswordVisibility,

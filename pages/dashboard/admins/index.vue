@@ -109,6 +109,11 @@ import NavHeader from "~/components/navigation/NavHeader.vue";
 import EditAdminModal from "~/components/ModalAdmin/EditAdminModal.vue";
 import RegisterAdminModal from "~/components/ModalAdmin/RegisterAdminModal.vue";
 import axios from "axios";
+import { definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: "auth-super-admin", // Aplica el middleware 'auth' a esta página
+});
 
 interface Admin {
   id: number;

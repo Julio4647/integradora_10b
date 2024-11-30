@@ -112,6 +112,11 @@ import NavHeader from "~/components/navigation/NavHeader.vue";
 import Swal from "sweetalert2";
 import RegisterDevicesModal from "~/components/ModalDevices/RegisterDevicesModal.vue";
 import axios from "axios";
+import { definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: "auth", // Aplica el middleware 'auth' a esta página
+});
 
 interface Device {
   id: number;

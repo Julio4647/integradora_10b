@@ -128,6 +128,11 @@ import axios from "axios";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import DeliveryConfirmationModal from "~/components/ModalCompleteRepair/DeliveryConfirmationModal.vue";
 import Swal from "sweetalert2";
+import { definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: "auth", // Aplica el middleware 'auth' a esta página
+});
 
 interface Repair {
   id: number;
