@@ -4,19 +4,35 @@
     <div
       class="flex flex-col sm:flex-row justify-between items-center my-4 px-4"
     >
-      <h1 class="text-2xl sm:text-3xl font-bold">Dispositivos Entregados</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold">Entregas Pendientes</h1>
     </div>
 
-    <!-- Filtros de búsqueda -->
+    <!-- Filtros -->
     <div
       class="flex flex-col sm:flex-row justify-between items-center px-4 mb-4 space-y-4 sm:space-y-0"
     >
+      <!-- Buscador -->
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Buscar por modelo, tipo de dispositivo, o cliente"
+        placeholder="Buscar por modelo, tipo de dispositivo..."
         class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/2"
       />
+
+      <!-- Select de tipos de dispositivos -->
+      <select
+        v-model="selectedDeviceType"
+        class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/4"
+      >
+        <option value="">Todos los tipos</option>
+        <option
+          v-for="(label, type) in deviceTypeTranslations"
+          :key="type"
+          :value="type"
+        >
+          {{ label }}
+        </option>
+      </select>
     </div>
 
     <!-- Contenido principal -->
@@ -52,7 +68,8 @@
             </div>
             <div class="flex gap-4 justify-center items-center">
               <div class="flex justify-center">
-                <span
+                <button
+                  @click="openDeliveryModal(repair)"
                   :class="getStatusStyle(repair.repairStatus.name)"
                   class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full cursor-pointer"
                 >
@@ -61,7 +78,7 @@
                     class="w-2 h-2 me-1 rounded-full"
                   ></span>
                   {{ translateStatus(repair.repairStatus.name) }}
-                </span>
+                </button>
               </div>
             </div>
           </div>
@@ -69,7 +86,7 @@
 
         <!-- Mensaje si no hay datos -->
         <div v-if="!paginatedRepairs.length" class="text-center text-gray-500">
-          No hay dispositivos entregados.
+          No hay dispositivos listos para entrega.
         </div>
       </div>
     </div>
@@ -94,6 +111,14 @@
         Siguiente
       </button>
     </div>
+
+    <DeliveryConfirmationModal
+      v-if="isDeliveryModalOpen && selectedRepair"
+      :isModalOpen="isDeliveryModalOpen"
+      :repair="selectedRepair"
+      @confirmDelivery="handleDeliveryConfirmation"
+      @close="handleModalClose"
+    />
   </div>
 </template>
 
@@ -101,6 +126,8 @@
 import { defineComponent, ref, computed, onMounted } from "vue";
 import axios from "axios";
 import NavHeader from "~/components/navigation/NavHeader.vue";
+import DeliveryConfirmationModal from "~/components/ModalCompleteRepair/DeliveryConfirmationModal.vue";
+import Swal from "sweetalert2";
 
 interface Repair {
   id: number;
@@ -131,45 +158,130 @@ interface Repair {
   diagnosticImage: any[];
   repairImage: any[];
 }
-
 export default defineComponent({
   components: {
     NavHeader,
+    DeliveryConfirmationModal,
   },
-  name: "CollectedRepairsList",
+  name: "DeliveryList",
   setup() {
-    const repairs = ref<Repair[]>([]); // Lista de reparaciones
-    const isLoading = ref(true); // Estado de carga
-    const searchQuery = ref(""); // Filtro de búsqueda
-    const itemsPerPage = 4; // Elementos por página
+    const isDeliveryModalOpen = ref(false);
+    const selectedRepair = ref<Repair | null>(null);
+    const repairs = ref<Repair[]>([]);
+    const isLoading = ref(true);
+    const itemsPerPage = 4;
     const currentPage = ref(1);
 
-    const totalPages = computed(() =>
-      Math.ceil(filteredRepairs.value.length / itemsPerPage)
-    );
+    // Filtros
+    const searchQuery = ref(""); // Buscador
+    const selectedDeviceType = ref(""); // Select de tipos de dispositivos
 
-    const filteredRepairs = computed(() => {
-      let filtered = repairs.value.filter(
-        (repair) => repair.repairStatus.name === "COLLECTED"
-      );
+    const openDeliveryModal = (repair: Repair) => {
+      selectedRepair.value = repair;
+      isDeliveryModalOpen.value = true;
+    };
 
-      if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        filtered = filtered.filter(
-          (repair) =>
-            repair.device.model.toLowerCase().includes(query) ||
-            repair.device.deviceType.name.toLowerCase().includes(query)
+    const handleModalClose = () => {
+      isDeliveryModalOpen.value = false;
+    };
+
+    const handleDeliveryConfirmation = async () => {
+      if (!selectedRepair.value) return;
+
+      try {
+        const config = useRuntimeConfig();
+        const ApiUrl = config.public.apiUrl;
+
+        const response = await axios.put(
+          `${ApiUrl}/repair/status/collection/${selectedRepair.value.id}`
         );
-      }
 
-      return filtered;
-    });
+        Swal.fire({
+          title: "¡Entrega completada!",
+          text: "La entrega del dispositivo se ha completado con éxito.",
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        });
+
+        handleModalClose();
+        fetchRepairs();
+      } catch (error: any) {
+        if (error.response && error.response.status === 400) {
+          const errorMessage = error.response.data.message;
+
+          if (errorMessage === "The repair has not been paid") {
+            Swal.fire({
+              title: "Pago pendiente",
+              text: "El producto aún no ha sido pagado. Por favor, completa el pago para proceder con la entrega.",
+              icon: "warning",
+              confirmButtonText: "Entendido",
+            });
+          } else if (
+            errorMessage === "The repair is not in the correct status"
+          ) {
+            Swal.fire({
+              title: "Estado incorrecto",
+              text: "El dispositivo no está en el estado correcto para ser entregado.",
+              icon: "error",
+              confirmButtonText: "Entendido",
+            });
+          } else if (errorMessage === "Record not found") {
+            Swal.fire({
+              title: "Reparación no encontrada",
+              text: "No se encontró la reparación especificada.",
+              icon: "error",
+              confirmButtonText: "Aceptar",
+            });
+          } else {
+            Swal.fire({
+              title: "Error desconocido",
+              text: "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+              icon: "error",
+              confirmButtonText: "Aceptar",
+            });
+          }
+        } else {
+          Swal.fire({
+            title: "Error de servidor",
+            text: "Ocurrió un error en el servidor. Por favor, intenta nuevamente más tarde.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+          });
+        }
+        console.error("Error al completar la entrega:", error);
+      }
+    };
+
+    const filteredRepairs = computed(() =>
+      repairs.value.filter((repair) => {
+        const matchesSearch =
+          searchQuery.value.trim() === "" ||
+          repair.device.model.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          translateDeviceType(repair.device.deviceType.name)
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase());
+
+        const matchesDeviceType =
+          selectedDeviceType.value === "" ||
+          repair.device.deviceType.name === selectedDeviceType.value;
+
+        return (
+          repair.repairStatus.name === "READY_FOR_COLLECTION" &&
+          matchesSearch &&
+          matchesDeviceType
+        );
+      })
+    );
 
     const paginatedRepairs = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage;
       const end = start + itemsPerPage;
       return filteredRepairs.value.slice(start, end);
     });
+
+    const totalPages = computed(() =>
+      Math.ceil(filteredRepairs.value.length / itemsPerPage)
+    );
 
     const prevPage = () => {
       if (currentPage.value > 1) {
@@ -185,12 +297,11 @@ export default defineComponent({
 
     const formatDate = (dateString: string): string => {
       const date = new Date(dateString);
-      const options: Intl.DateTimeFormatOptions = {
+      return date.toLocaleDateString("es-ES", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      };
-      return date.toLocaleDateString("es-ES", options);
+      });
     };
 
     const deviceTypeTranslations: Record<string, string> = {
@@ -214,10 +325,10 @@ export default defineComponent({
     const translateDeviceType = (deviceType: string): string =>
       deviceTypeTranslations[deviceType] || deviceType;
 
-    const translateStatus = (status: string): string =>
+      const translateStatus = (status: string): string =>
       statusTranslations[status] || status;
 
-    const getStatusStyle = (status: string) => {
+      const getStatusStyle = (status: string) => {
       const styles: Record<string, string> = {
         RECEIVED: "bg-blue-500 text-white dark:bg-blue-700 dark:text-white",
         QUOTATION: "bg-gray-500 text-white dark:bg-gray-700 dark:text-white",
@@ -254,6 +365,7 @@ export default defineComponent({
 
         const response = await axios.get(`${ApiUrl}/repair/`);
         repairs.value = response.data.data;
+        console.log(response.data.data)
       } catch (error) {
         console.error("Error al cargar las reparaciones:", error);
       } finally {
@@ -267,7 +379,6 @@ export default defineComponent({
 
     return {
       repairs,
-      searchQuery,
       currentPage,
       totalPages,
       paginatedRepairs,
@@ -275,11 +386,19 @@ export default defineComponent({
       prevPage,
       nextPage,
       formatDate,
-      translateStatus,
       translateDeviceType,
-      getStatusStyle,
-      getStatusDotStyle,
+      deviceTypeTranslations,
       isLoading,
+      openDeliveryModal,
+      isDeliveryModalOpen,
+      selectedRepair,
+      handleDeliveryConfirmation,
+      handleModalClose,
+      searchQuery,
+      selectedDeviceType,
+      getStatusDotStyle,
+      getStatusStyle,
+      translateStatus
     };
   },
 });

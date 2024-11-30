@@ -4,17 +4,27 @@
 
     <!-- Contenido principal -->
     <div class="flex-grow flex flex-col">
-      <!-- Título y botón -->
+      <!-- Título, buscador y botón -->
       <div
         class="flex flex-col sm:flex-row justify-between items-center my-4 px-4"
       >
         <h1 class="text-2xl sm:text-3xl font-bold">Lista de Administradores</h1>
-        <button
-          @click="openRegisterModal"
-          class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-        >
-          Registrar Nuevo Administrador
-        </button>
+        <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <button
+            @click="openRegisterModal"
+            class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+          >
+            Registrar Nuevo Administrador
+          </button>
+        </div>
+      </div>
+      <div class="px-4 mb-4">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Buscar por nombre o apellido"
+          class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/2"
+        />
       </div>
 
       <!-- Spinner de carga -->
@@ -25,7 +35,7 @@
       </div>
 
       <!-- Lista de administradores -->
-      <div v-if="!isLoading && admins.length" class="flex-grow">
+      <div v-if="!isLoading && filteredAdmins.length" class="flex-grow">
         <div class="grid grid-cols-1 gap-4 p-3 mt-4">
           <div
             v-for="admin in paginatedAdmins"
@@ -49,39 +59,18 @@
                 <h1 class="font-semibold text-gray-700">Email</h1>
                 <p class="text-gray-600">{{ admin.email }}</p>
               </div>
-              <!--<div class="flex gap-4 justify-center items-center">
-                <button
-                  @click="openModal()"
-                  class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
-                >
-                  <Icon
-                    icon="material-symbols:box-edit-outline"
-                    class="w-5 h-5 text-white"
-                  />
-                </button>
-                <button
-                  @click="deleteAdmin(admin.id)"
-                  class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
-                >
-                  <Icon
-                    icon="material-symbols:delete-forever"
-                    class="w-5 h-5 text-white"
-                  />
-                </button>
-              </div>
-              -->
             </div>
           </div>
         </div>
       </div>
 
       <!-- Mensaje cuando no hay administradores -->
-      <div v-if="!isLoading && !admins.length" class="text-center mt-10">
+      <div v-if="!isLoading && !filteredAdmins.length" class="text-center mt-10">
         <p class="text-gray-600">No hay administradores registrados.</p>
       </div>
 
       <!-- Paginador -->
-      <div v-if="admins.length" class="flex justify-center space-x-4 mt-4 mb-4">
+      <div v-if="filteredAdmins.length" class="flex justify-center space-x-4 mt-4 mb-4">
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
@@ -117,8 +106,6 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
-import { Icon } from "@iconify/vue/dist/iconify.js";
-import Swal from "sweetalert2";
 import EditAdminModal from "~/components/ModalAdmin/EditAdminModal.vue";
 import RegisterAdminModal from "~/components/ModalAdmin/RegisterAdminModal.vue";
 import axios from "axios";
@@ -143,6 +130,7 @@ export default defineComponent({
     const isModalOpen = ref(false);
     const isRegisterModalOpen = ref(false);
     const admins = ref<Admin[]>([]);
+    const searchQuery = ref(""); // Query del buscador
     const currentPage = ref(1);
     const itemsPerPage = 4;
     const config = useRuntimeConfig();
@@ -160,36 +148,17 @@ export default defineComponent({
       }
     };
 
-    const deleteAdmin = async (adminId: number) => {
-      try {
-        const confirmed = await Swal.fire({
-          title: "¿Estás seguro?",
-          text: "¡No podrás recuperar esta información!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Sí, eliminar",
-        });
-
-        if (confirmed.isConfirmed) {
-          await axios.delete(`${ApiUrl}/user/admins/${adminId}`);
-          await Swal.fire(
-            "¡Eliminado!",
-            "El administrador ha sido eliminado.",
-            "success"
-          );
-          fetchAdmins(); // Actualiza la lista tras eliminar
-        }
-      } catch (error) {
-        console.error("Error al eliminar administrador:", error);
-        await Swal.fire(
-          "Error",
-          "No se pudo eliminar el administrador.",
-          "error"
-        );
+    const filteredAdmins = computed(() => {
+      if (!searchQuery.value) {
+        return admins.value; // Sin filtro, devolver todos los administradores
       }
-    };
+      const query = searchQuery.value.toLowerCase();
+      return admins.value.filter(
+        (admin) =>
+          admin.name.toLowerCase().includes(query) ||
+          admin.lastname.toLowerCase().includes(query)
+      );
+    });
 
     const handleModalClose = () => {
       isRegisterModalOpen.value = false;
@@ -197,13 +166,13 @@ export default defineComponent({
     };
 
     const totalPages = computed(() =>
-      Math.ceil(admins.value.length / itemsPerPage)
+      Math.ceil(filteredAdmins.value.length / itemsPerPage)
     );
 
     const paginatedAdmins = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage;
       const end = start + itemsPerPage;
-      return admins.value.slice(start, end);
+      return filteredAdmins.value.slice(start, end);
     });
 
     const prevPage = () => {
@@ -218,10 +187,6 @@ export default defineComponent({
       }
     };
 
-    const openModal = () => {
-      isModalOpen.value = true;
-    };
-
     const openRegisterModal = () => {
       isRegisterModalOpen.value = true;
     };
@@ -231,23 +196,21 @@ export default defineComponent({
     return {
       isLoading,
       admins,
+      searchQuery,
+      filteredAdmins,
+      paginatedAdmins,
       currentPage,
       totalPages,
-      paginatedAdmins,
-      handleModalClose,
       prevPage,
       nextPage,
       isModalOpen,
       isRegisterModalOpen,
-      fetchAdmins,
-      deleteAdmin,
-      openModal,
       openRegisterModal,
+      fetchAdmins,
+      handleModalClose
     };
   },
 });
 </script>
 
-<style scoped>
-/* Estilos específicos para esta página */
-</style>
+<style scoped></style>

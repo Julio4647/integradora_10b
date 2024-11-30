@@ -4,17 +4,29 @@
 
     <!-- Contenido principal -->
     <div class="flex-grow flex flex-col">
-      <!-- Título y botón -->
+      <!-- Título, buscador y botón -->
       <div
         class="flex flex-col sm:flex-row justify-between items-center my-4 px-4"
       >
         <h1 class="text-2xl sm:text-3xl font-bold">Lista de Técnicos</h1>
-        <button
-          @click="openRegisterModal"
-          class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-        >
-          Registrar Nuevo Técnico
-        </button>
+        <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <button
+            @click="openRegisterModal"
+            class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+          >
+            Registrar Nuevo Técnico
+          </button>
+        </div>
+      </div>
+
+      <!-- Buscador -->
+      <div class="px-4 mb-4">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Buscar por nombre o apellido"
+          class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/2"
+        />
       </div>
 
       <!-- Spinner de carga -->
@@ -25,7 +37,7 @@
       </div>
 
       <!-- Lista de técnicos -->
-      <div v-if="!isLoading" class="flex-grow">
+      <div v-if="!isLoading && filteredTechnicians.length" class="flex-grow">
         <div class="grid grid-cols-1 gap-4 p-3 mt-4">
           <div
             v-for="technician in paginatedTechnicians"
@@ -49,33 +61,18 @@
                 <h1 class="font-semibold text-gray-700">Email</h1>
                 <p class="text-gray-600">{{ technician.email }}</p>
               </div>
-             <!-- <div class="flex gap-4 justify-center items-center">
-                <button
-                  @click="openModal()"
-                  class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
-                >
-                  <Icon
-                    icon="material-symbols:box-edit-outline"
-                    class="w-5 h-5 text-white"
-                  />
-                </button>
-                <button
-                  @click="deleteTechnician()"
-                  class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
-                >
-                  <Icon
-                    icon="material-symbols:delete-forever"
-                    class="w-5 h-5 text-white"
-                  />
-                </button>
-              </div>-->
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Mensaje cuando no hay técnicos -->
+      <div v-if="!isLoading && !filteredTechnicians.length" class="text-center mt-10">
+        <p class="text-gray-600">No hay técnicos registrados.</p>
+      </div>
+
       <!-- Paginador -->
-      <div class="flex justify-center space-x-4 mt-4 mb-4">
+      <div v-if="filteredTechnicians.length" class="flex justify-center space-x-4 mt-4 mb-4">
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
@@ -107,12 +104,9 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
-import { Icon } from "@iconify/vue/dist/iconify.js";
-import Swal from "sweetalert2";
 import RegisterTechnicianModal from "~/components/ModalTechnician/RegisterTechnicianModal.vue";
 import EditTechnicianModal from "~/components/ModalTechnician/EditTechnicianModal.vue";
 import axios from "axios";
@@ -131,39 +125,13 @@ export default defineComponent({
     RegisterTechnicianModal,
     EditTechnicianModal,
   },
-  methods: {
-    deleteTechnician() {
-      // Mostrar alerta de confirmación
-      Swal.fire({
-        title: "¿Estás seguro?",
-        text: "¡No podrás recuperar esta información!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Sí, eliminar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Aquí va la lógica para eliminar el cliente
-
-          // Mostrar alerta de éxito después de la eliminación
-          Swal.fire({
-            title: "¡Eliminado!",
-            text: "El cliente ha sido eliminado.",
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Aceptar",
-          });
-        }
-      });
-    },
-  },
   name: "TechnicianList",
   setup() {
     const isLoading = ref(true); // Estado de carga
     const isModalOpen = ref(false);
     const isRegisterModalOpen = ref(false);
     const technicians = ref<Technician[]>([]);
+    const searchQuery = ref(""); // Query del buscador
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
 
@@ -179,34 +147,34 @@ export default defineComponent({
       }
     };
 
-    const handleModalClose = () => {
-      isRegisterModalOpen.value = false;
-      location.reload();
-    };
-
-    onMounted(() => {
-      fetchTechnicians();
+    const filteredTechnicians = computed(() => {
+      if (!searchQuery.value) {
+        return technicians.value; // Sin filtro, devolver todos los técnicos
+      }
+      const query = searchQuery.value.toLowerCase();
+      return technicians.value.filter(
+        (technician) =>
+          technician.name.toLowerCase().includes(query) ||
+          technician.lastname.toLowerCase().includes(query)
+      );
     });
 
-    const openModal = () => {
-      isModalOpen.value = true;
-    };
-
-    const openRegisterModal = () => {
-      isRegisterModalOpen.value = true;
+    const handleModalClose = () => {
+      isRegisterModalOpen.value = false;
+      location.reload(); // Esto recargará la página al cerrar el modal
     };
 
     const itemsPerPage = 4;
     const currentPage = ref(1);
 
     const totalPages = computed(() =>
-      Math.ceil(technicians.value.length / itemsPerPage)
+      Math.ceil(filteredTechnicians.value.length / itemsPerPage)
     );
 
     const paginatedTechnicians = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage;
       const end = start + itemsPerPage;
-      return technicians.value.slice(start, end);
+      return filteredTechnicians.value.slice(start, end);
     });
 
     const prevPage = () => {
@@ -221,8 +189,18 @@ export default defineComponent({
       }
     };
 
+    const openRegisterModal = () => {
+      isRegisterModalOpen.value = true;
+    };
+
+    onMounted(() => {
+      fetchTechnicians();
+    });
+
     return {
       technicians,
+      searchQuery,
+      filteredTechnicians,
       currentPage,
       totalPages,
       paginatedTechnicians,
@@ -231,7 +209,6 @@ export default defineComponent({
       isLoading,
       isModalOpen,
       isRegisterModalOpen,
-      openModal,
       openRegisterModal,
       handleModalClose
     };
@@ -239,12 +216,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-/* Spinner CSS */
-.animate-spin {
-  border-radius: 9999px;
-  border-width: 4px;
-  border-color: transparent;
-  border-top-color: #1d4ed8;
-}
-</style>
+<style scoped></style>

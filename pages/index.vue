@@ -3,11 +3,9 @@
     class="relative w-full min-h-screen flex items-center justify-center bg-white overflow-hidden"
   >
     <!-- Card de login -->
-    <div
-      class="relative p-10 border border-gray-600 rounded-lg w-full max-w-md z-10"
-    >
+    <div class="relative p-10 rounded-lg w-full max-w-md z-10">
       <div class="flex justify-center mb-6">
-        <img src="../assets/logo (3).png" alt="" srcset="" class="w-48 h-48">
+        <img src="../assets/logo (3).png" alt="" srcset="" class="w-48 h-48" />
       </div>
 
       <Form @submit="loginSystem" v-slot="{ errors }">
@@ -180,9 +178,6 @@ export default defineComponent({
         if (!error) {
           const allowedRoles = ["SUPERADMIN", "ADMIN"];
           const userRole = data.userInfo?.authorities?.[0]?.authority;
-          localStorage.setItem("role", userRole);
-          localStorage.setItem('user', JSON.stringify(response.data.data.userInfo));
-          localStorage.setItem('loginInfo', JSON.stringify(response.data.data.loginInfo));
 
           if (!allowedRoles.includes(userRole)) {
             Swal.fire({
@@ -193,13 +188,19 @@ export default defineComponent({
             return;
           }
 
+          // Guarda la información del usuario y token
+          localStorage.setItem("role", userRole);
+          localStorage.setItem("user", JSON.stringify(data.userInfo));
+          localStorage.setItem("loginInfo", JSON.stringify(data.loginInfo));
+          localStorage.setItem("token", data.loginInfo.token);
+
+          // Si el usuario debe cambiar su contraseña, redirige a la página correspondiente
           if (message === "User must change password") {
             router.push(
               `/change-password?email=${encodeURIComponent(values.email)}`
             );
           } else {
-            localStorage.setItem("token", data.loginInfo.token);
-            console.log(response.data);
+            // Redirige al dashboard
             router.push("/dashboard");
           }
         } else {
@@ -215,22 +216,31 @@ export default defineComponent({
 
         if (error.response) {
           if (error.response.status === 401) {
-            // Handle Unauthorized Error (401)
             Swal.fire({
               icon: "error",
               title: "Credenciales incorrectas",
               text: "El email o la contraseña son incorrectos. Intenta de nuevo.",
             });
-          } else if (
-            error.response.status === 403 &&
-            error.response.data.detail === "User must change password"
-          ) {
-            Swal.fire({
-              icon: "warning",
-              title: "Contraseña requerida",
-              text: "Debe cambiar su contraseña antes de continuar.",
-            });
-            router.push("/change-password");
+          } else if (error.response.status === 403) {
+            const allowedRoles = ["SUPERADMIN", "ADMIN"];
+            const userRole = error.response.data?.userInfo?.authorities?.[0]?.authority;
+
+            if (allowedRoles.includes(userRole)) {
+              Swal.fire({
+                icon: "warning",
+                title: "Contraseña requerida",
+                text: "Debe cambiar su contraseña antes de continuar.",
+              });
+              router.push(
+                `/change-password?email=${encodeURIComponent(values.email)}`
+              );
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Acceso denegado",
+                text: "No tiene permiso para cambiar su contraseña en este sistema.",
+              });
+            }
           } else {
             Swal.fire({
               icon: "error",

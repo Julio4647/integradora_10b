@@ -83,6 +83,11 @@
               >En Reparación</a
             >
             <a
+              href="/dashboard/repairs/completeRepair"
+              class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
+              >Listos para entregar</a
+            >
+            <a
               href="/dashboard/repairs/repairHistory"
               class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
               >Historial Reparaciones</a
@@ -212,7 +217,12 @@
             >Pendiente de Cotización</a
           >
           <a
-            href="/dashboard/repairs/in-progress"
+            href="/dashboard/repairs/underRepair"
+            class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
+            >En Reparación</a
+          >
+          <a
+            href="/dashboard/repairs/completeRepair"
             class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
             >En Reparación</a
           >

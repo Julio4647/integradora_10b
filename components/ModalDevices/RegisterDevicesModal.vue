@@ -268,6 +268,7 @@ export default defineComponent({
           const createdDevice = deviceResponse.data;
           repairPayload.device.id = createdDevice.data.id;
 
+          console.log(repairPayload)
           const repairResponse = await axios.post(
             `${ApiUrl}/repair/`,
             repairPayload,

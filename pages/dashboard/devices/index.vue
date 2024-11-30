@@ -11,6 +11,32 @@
       </button>
     </div>
 
+    <!-- Filtros -->
+    <div class="flex flex-col sm:flex-row justify-between items-center px-4 mb-4 space-y-4 sm:space-y-0">
+      <!-- Buscador -->
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Buscar por modelo, marca o número de serie"
+        class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/2"
+      />
+
+      <!-- Select de tipos de dispositivos -->
+      <select
+        v-model="selectedDeviceType"
+        class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/4"
+      >
+        <option value="">Todos los tipos</option>
+        <option
+          v-for="(label, type) in deviceTypeTranslations"
+          :key="type"
+          :value="type"
+        >
+          {{ label }}
+        </option>
+      </select>
+    </div>
+
     <!-- Contenedor principal -->
     <div class="flex-grow">
       <!-- Spinner de carga -->
@@ -21,7 +47,7 @@
       <!-- Lista de dispositivos -->
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
         <div
-          v-for="(item, index) in paginatedItems"
+          v-for="(item, index) in filteredAndPaginatedItems"
           :key="index"
           class="bg-white rounded-lg shadow-lg p-6"
         >
@@ -49,18 +75,6 @@
               </div>
             </div>
           </div>
-          <!--<div class="mt-4 flex justify-center">
-            <button
-              @click="deleteDevice(item)"
-              class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
-            >
-              <Icon
-                icon="material-symbols:delete-forever"
-                class="w-5 h-5 text-white"
-              />
-            </button>
-          </div>
-          -->
         </div>
       </div>
     </div>
@@ -90,7 +104,6 @@
     />
   </div>
 </template>
-
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed } from "vue";
@@ -123,6 +136,8 @@ export default defineComponent({
     const currentPage = ref(1);
     const itemsPerPage = ref(6);
     const isLoading = ref(true);
+    const searchQuery = ref(""); // Buscador
+    const selectedDeviceType = ref(""); // Filtro por tipo de dispositivo
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
 
@@ -152,13 +167,31 @@ export default defineComponent({
     });
 
     const totalPages = computed(() => {
-      return Math.ceil(items.value.length / itemsPerPage.value);
+      return Math.ceil(filteredItems.value.length / itemsPerPage.value);
     });
 
-    const paginatedItems = computed(() => {
+    const filteredItems = computed(() => {
+      return items.value.filter((item) => {
+        const matchesSearch =
+          searchQuery.value.trim() === "" ||
+          item.model.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          item.brand.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          item.serialNumber
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase());
+
+        const matchesDeviceType =
+          selectedDeviceType.value === "" ||
+          item.deviceType.name === selectedDeviceType.value;
+
+        return matchesSearch && matchesDeviceType;
+      });
+    });
+
+    const filteredAndPaginatedItems = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage.value;
       const end = start + itemsPerPage.value;
-      return items.value.slice(start, end);
+      return filteredItems.value.slice(start, end);
     });
 
     const deleteDevice = (item: Device) => {
@@ -202,6 +235,15 @@ export default defineComponent({
       }
     };
 
+    const deviceTypeTranslations: Record<string, string> = {
+      LAPTOP: "Portátil",
+      DESKTOP: "Computadora de escritorio",
+      TABLET: "Tableta",
+      SMARTPHONE: "Teléfono inteligente",
+      SMARTWATCH: "Reloj inteligente",
+      VIDEOGAME_CONSOLE: "Consola de videojuegos",
+    };
+
     const nextPage = () => {
       if (currentPage.value < totalPages.value) {
         currentPage.value++;
@@ -221,13 +263,16 @@ export default defineComponent({
       currentPage,
       itemsPerPage,
       totalPages,
-      paginatedItems,
-      isLoading, // Añadido al retorno
+      filteredAndPaginatedItems,
+      isLoading,
+      searchQuery,
+      selectedDeviceType,
+      deviceTypeTranslations,
       deleteDevice,
       getIcon,
       nextPage,
       prevPage,
-      handleModalClose
+      handleModalClose,
     };
   },
 });

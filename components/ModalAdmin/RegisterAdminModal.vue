@@ -89,25 +89,6 @@
             />
             <ErrorMessage name="phone" class="text-red-500 text-sm" />
           </div>
-          <div>
-            <label
-              for="password"
-              class="block text-md font-medium text-gray-700"
-              >Contraseña</label
-            >
-            <Field
-              name="password"
-              as="input"
-              type="password"
-              id="password"
-              class="w-full px-3 py-2 border rounded"
-              :class="{ 'border-red-500': errors.password }"
-              placeholder="Ingresar Contraseña"
-              rules="required|min:6"
-              v-model="password"
-            />
-            <ErrorMessage name="password" class="text-red-500 text-sm" />
-          </div>
         </div>
 
         <div class="flex justify-end gap-4 mt-6">
@@ -161,7 +142,6 @@ export default defineComponent({
     const lastName = ref("");
     const email = ref("");
     const phone = ref("");
-    const password = ref("");
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
 
@@ -172,7 +152,6 @@ export default defineComponent({
           lastname: lastName.value,
           email: email.value,
           phone: phone.value,
-          password: password.value,
         };
 
         const response = await fetch(`${ApiUrl}/auth/signup/admin`, {
@@ -214,7 +193,7 @@ export default defineComponent({
       }
     };
 
-    return { firstName, lastName, email, phone, password, submitForm };
+    return { firstName, lastName, email, phone, submitForm };
   },
 });
 </script>

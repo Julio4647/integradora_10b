@@ -17,6 +17,16 @@
         </button>
       </div>
 
+      <!-- Buscador -->
+      <div class="px-4 mb-4">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Buscar por nombre o apellido"
+          class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/2"
+        />
+      </div>
+
       <!-- Spinner de carga -->
       <div v-if="isLoading" class="flex justify-center items-center h-96">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-700"></div>
@@ -25,7 +35,7 @@
       <!-- Lista de clientes -->
       <div v-else class="grid grid-cols-1 gap-4 p-3 mt-4">
         <div
-          v-for="client in paginatedClients"
+          v-for="client in filteredClients"
           :key="client.id"
           class="p-6 border border-gray-300 rounded-lg w-full max-w mx-auto bg-white shadow-lg text-center"
         >
@@ -46,26 +56,6 @@
               <h1 class="font-semibold text-gray-700">Email</h1>
               <p class="text-gray-600">{{ client.email }}</p>
             </div>
-            <!--<div class="flex gap-4 justify-center items-center">
-              <button
-                @click="openModal()"
-                class="rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-300 p-4 flex items-center justify-center"
-              >
-                <Icon
-                  icon="material-symbols:box-edit-outline"
-                  class="w-5 h-5 text-white"
-                />
-              </button>
-              <button
-                @click="deleteClient()"
-                class="rounded-full bg-red-700 shadow-lg hover:bg-red-500 p-4 flex items-center justify-center"
-              >
-                <Icon
-                  icon="material-symbols:delete-forever"
-                  class="w-5 h-5 text-white"
-                />
-              </button>
-            </div> -->
           </div>
         </div>
       </div>
@@ -107,8 +97,6 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
-import { Icon } from "@iconify/vue/dist/iconify.js";
-import Swal from "sweetalert2";
 import RegisterClientModal from "~/components/ModalClient/RegisterClientModal.vue";
 import EditClientModal from "~/components/ModalClient/EditClientModal.vue";
 import axios from "axios";
@@ -127,34 +115,12 @@ export default defineComponent({
     RegisterClientModal,
     EditClientModal,
   },
-  methods: {
-    deleteClient() {
-      Swal.fire({
-        title: "¿Estás seguro?",
-        text: "¡No podrás recuperar esta información!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Sí, eliminar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "¡Eliminado!",
-            text: "El cliente ha sido eliminado.",
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Aceptar",
-          });
-        }
-      });
-    },
-  },
   setup() {
     const isLoading = ref(true); // Indicador de carga
     const isModalOpen = ref(false);
     const isRegisterModalOpen = ref(false);
     const clients = ref<Client[]>([]);
+    const searchQuery = ref(""); // Query del buscador
     const currentPage = ref(1);
     const itemsPerPage = 4;
 
@@ -175,7 +141,7 @@ export default defineComponent({
 
     const handleModalClose = () => {
       isRegisterModalOpen.value = false;
-      location.reload(); // Esto recargará la página al cerrar el modal
+      fetchClients(); // Actualizar la lista al cerrar el modal
     };
 
     const openModal = () => {
@@ -186,14 +152,26 @@ export default defineComponent({
       isRegisterModalOpen.value = true;
     };
 
+    const filteredClients = computed(() => {
+      if (!searchQuery.value) {
+        return clients.value; // Mostrar todos los clientes si no hay búsqueda
+      }
+      const query = searchQuery.value.toLowerCase();
+      return clients.value.filter(
+        (client) =>
+          client.name.toLowerCase().includes(query) ||
+          client.lastname.toLowerCase().includes(query)
+      );
+    });
+
     const totalPages = computed(() =>
-      Math.ceil(clients.value.length / itemsPerPage)
+      Math.ceil(filteredClients.value.length / itemsPerPage)
     );
 
     const paginatedClients = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage;
       const end = start + itemsPerPage;
-      return clients.value.slice(start, end);
+      return filteredClients.value.slice(start, end);
     });
 
     const prevPage = () => {
@@ -211,21 +189,21 @@ export default defineComponent({
     return {
       isLoading,
       clients,
+      searchQuery,
       currentPage,
       totalPages,
       paginatedClients,
+      filteredClients,
       prevPage,
       nextPage,
       isModalOpen,
       isRegisterModalOpen,
       openModal,
       openRegisterModal,
-      handleModalClose
+      handleModalClose,
     };
   },
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

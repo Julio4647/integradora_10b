@@ -7,23 +7,11 @@
       class="relative p-10 border border-gray-600 rounded-lg w-full max-w-md z-10"
     >
       <div class="flex justify-center mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-16 w-16 text-gray-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 3h18M3 7h18M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"
-          />
-        </svg>
+        <img src="../assets/logo (3).png" alt="" srcset="" class="w-48 h-48" />
       </div>
 
       <Form @submit="updatePasswordWithToken" v-slot="{ errors }">
+        <!-- Email -->
         <div class="relative mb-4">
           <Icon
             name="material-symbols:mail-outline"
@@ -44,6 +32,7 @@
           <ErrorMessage name="email" class="text-red-500 text-sm" />
         </div>
 
+        <!-- Old Password -->
         <div class="relative mb-4">
           <Icon
             name="material-symbols:lock-outline"
@@ -53,16 +42,27 @@
           <Field
             name="oldPassword"
             as="input"
-            :type="showPassword ? 'text' : 'password'"
+            :type="showOldPassword ? 'text' : 'password'"
             id="oldPassword"
             class="w-full px-10 py-2 border rounded"
             :class="{ 'border-red-500': errors.oldPassword }"
             placeholder="Contraseña antigua"
             rules="required|min:6"
           />
+          <button
+            type="button"
+            @click="toggleOldPasswordVisibility"
+            class="absolute right-2 top-3 text-blue-600 hover:text-gray-600"
+          >
+            <Icon
+              :icon="showOldPassword ? 'material-symbols:visibility-off' : 'material-symbols:visibility'"
+              size="24"
+            />
+          </button>
           <ErrorMessage name="oldPassword" class="text-red-500 text-sm" />
         </div>
 
+        <!-- New Password -->
         <div class="relative mb-4">
           <Icon
             name="material-symbols:lock-outline"
@@ -72,16 +72,27 @@
           <Field
             name="newPassword"
             as="input"
-            :type="showPassword ? 'text' : 'password'"
+            :type="showNewPassword ? 'text' : 'password'"
             id="newPassword"
             class="w-full px-10 py-2 border rounded"
             :class="{ 'border-red-500': errors.newPassword }"
             placeholder="Nueva contraseña"
-            rules="required|min:6"
+            rules="required|min:6|noJsonOrSql"
           />
+          <button
+            type="button"
+            @click="toggleNewPasswordVisibility"
+            class="absolute right-2 top-3 text-blue-600 hover:text-gray-600"
+          >
+            <Icon
+              :icon="showNewPassword ? 'material-symbols:visibility-off' : 'material-symbols:visibility'"
+              size="24"
+            />
+          </button>
           <ErrorMessage name="newPassword" class="text-red-500 text-sm" />
         </div>
 
+        <!-- Submit Button -->
         <div class="text-center justify-center mt-4">
           <button
             type="submit"
@@ -92,32 +103,6 @@
         </div>
       </Form>
     </div>
-
-    <!-- Círculos responsivos parte superior derecha -->
-    <div
-      class="absolute top-0 right-0 w-[30vw] aspect-square bg-gray-900 rounded-bl-full animate-wave-1"
-    >
-      <div
-        class="absolute top-0 right-0 w-[25vw] aspect-square bg-blue-950 rounded-bl-full"
-      >
-        <div
-          class="absolute top-0 right-0 w-[20vw] aspect-square bg-blue-800 rounded-bl-full"
-        ></div>
-      </div>
-    </div>
-
-    <!-- Círculos responsivos parte inferior izquierda -->
-    <div
-      class="absolute bottom-0 left-0 w-[30vw] aspect-square bg-gray-900 rounded-tr-full animate-wave-2"
-    >
-      <div
-        class="absolute bottom-0 left-0 w-[25vw] aspect-square bg-blue-950 rounded-tr-full"
-      >
-        <div
-          class="absolute bottom-0 left-0 w-[20vw] aspect-square bg-blue-800 rounded-tr-full"
-        ></div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -127,16 +112,39 @@ import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
 import { useRouter, useRoute } from "vue-router";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { min } from "@vee-validate/rules";
 
 // Definir reglas
 defineRule("required", (value: string) => {
-  return !!value || "Este campo es obligatorio";
+  return value && value.trim() !== "" ? true : "Este campo es obligatorio";
 });
+
 defineRule("email", (value: string) => {
   return (
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "El correo debe ser válido"
   );
 });
+
+defineRule("min", (value: string, [length]: [number]) => {
+  return (
+    (value && value.length >= length) || `Debe tener al menos ${length} caracteres`
+  );
+});
+
+defineRule("noJsonOrSql", (value: string) => {
+  const jsonRegex = /{.*}|:|,/; // Detecta patrones de JSON
+  const sqlRegex = /(select|insert|delete|update|drop|union|create|alter|where|--|' or '|;|--)/i; // Mejora para inyecciones SQL
+  
+  if (jsonRegex.test(value)) {
+    return "No se permiten estructuras JSON en este campo";
+  }
+  if (sqlRegex.test(value)) {
+    return "No se permiten comandos SQL en este campo";
+  }
+  return true;
+});
+
+
 
 export default defineComponent({
   components: {
@@ -147,13 +155,18 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const showPassword = ref(false);
+    const showOldPassword = ref(false);
+    const showNewPassword = ref(false);
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
     const email = route.query.email || "";
 
-    const togglePasswordVisibility = () => {
-      showPassword.value = !showPassword.value;
+    const toggleOldPasswordVisibility = () => {
+      showOldPassword.value = !showOldPassword.value;
+    };
+
+    const toggleNewPasswordVisibility = () => {
+      showNewPassword.value = !showNewPassword.value;
     };
 
     const updatePasswordWithToken = async (values: Record<string, any>) => {
@@ -192,8 +205,10 @@ export default defineComponent({
 
     return {
       updatePasswordWithToken,
-      togglePasswordVisibility,
-      showPassword,
+      toggleOldPasswordVisibility,
+      toggleNewPasswordVisibility,
+      showOldPassword,
+      showNewPassword,
       email,
     };
   },
