@@ -52,7 +52,7 @@
             class="cursor-pointer rounded-md"
             @click="openModal(repair.id)"
           >
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
               <div class="flex flex-col">
                 <h1 class="font-semibold text-gray-700">Modelo</h1>
                 <p class="text-gray-600">{{ repair.device.model }}</p>
@@ -60,6 +60,14 @@
               <div class="flex flex-col">
                 <h1 class="font-semibold text-gray-700">Fecha de Ingreso</h1>
                 <p class="text-gray-600">{{ formatDate(repair.entry_date) }}</p>
+              </div>
+              <div class="flex flex-col">
+                <h1 class="font-semibold text-gray-700">Tecnico</h1>
+                <p class="text-gray-600">{{ repair.technician.name }} {{ repair.technician.lastname }}</p>
+              </div>
+              <div class="flex flex-col">
+                <h1 class="font-semibold text-gray-700">Cliente</h1>
+                <p class="text-gray-600">{{ repair.client.name }} {{ repair.client.lastname }}</p>
               </div>
               <div class="flex flex-col">
                 <h1 class="font-semibold text-gray-700">Tipo Dispositivo</h1>
@@ -160,8 +168,36 @@ interface Repair {
       name: string;
     };
   };
-  diagnosticImage: any[];
-  repairImage: any[];
+  diagnosticImage: { id: number; name: string }[];
+  repairImage: { id: number; name: string }[];
+  client: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    new_user: boolean;
+    active: boolean;
+    userType: {
+      id: number;
+      name: string;
+    };
+    username: string;
+  };
+  technician: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    new_user: boolean;
+    active: boolean;
+    userType: {
+      id: number;
+      name: string;
+    };
+    username: string;
+  };
 }
 
 export default defineComponent({

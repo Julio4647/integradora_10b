@@ -10,7 +10,7 @@
           @click="$emit('close')"
           class="text-gray-600 hover:text-gray-800 transition"
         >
-          <span class="material-icons">close</span>
+          <span class="material-icons">X</span>
         </button>
       </div>
       <div class="grid grid-cols-2 mt-4 gap-4">

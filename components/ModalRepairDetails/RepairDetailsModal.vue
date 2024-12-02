@@ -1,78 +1,124 @@
 <template>
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-    >
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
-        <!-- Cabecera del modal -->
-        <div class="flex justify-between items-center border-b pb-4">
-          <h2 class="text-xl font-bold">Detalles de Reparación</h2>
-          <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-            ✕
-          </button>
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-5xl p-6">
+      <!-- Cabecera del modal -->
+      <div class="flex justify-between items-center border-b pb-4">
+        <h2 class="text-xl font-bold">Detalles de Reparación</h2>
+        <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
+          ✕
+        </button>
+      </div>
+
+      <!-- Cuerpo del modal -->
+      <div v-if="isLoading" class="flex justify-center items-center h-32">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"
+        ></div>
+      </div>
+      <div v-else>
+        <div
+          v-if="repairDetails"
+          class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4"
+        >
+          <div>
+            <p><strong>Descripción del Problema:</strong></p>
+            <p>{{ repairDetails.problem_description }}</p>
+          </div>
+          <div>
+            <p><strong>Fecha de Ingreso:</strong></p>
+            <p>{{ formatDate(repairDetails.entry_date) }}</p>
+          </div>
+          <div>
+            <p><strong>Modelo:</strong></p>
+            <p>{{ repairDetails.device.model }}</p>
+          </div>
+          <div>
+            <p><strong>Marca:</strong></p>
+            <p>{{ repairDetails.device.brand }}</p>
+          </div>
+          <div>
+            <p><strong>Tipo de Dispositivo:</strong></p>
+            <p>
+              {{ translateDeviceType(repairDetails.device.deviceType.name) }}
+            </p>
+          </div>
+          <div>
+            <p><strong>Costo Estimado:</strong></p>
+            <p>${{ repairDetails.diagnostic_estimated_cost.toFixed(2) }}</p>
+          </div>
+          <div>
+            <p><strong>Precio Total:</strong></p>
+            <p>${{ repairDetails.total_price.toFixed(2) }}</p>
+          </div>
+          <div>
+            <p><strong>Tecnico:</strong></p>
+            <p>{{ repairDetails.technician.name }} {{ repairDetails.technician.lastname }}</p>
+          </div>
+          <div>
+            <p><strong>Cliente:</strong></p>
+            <p>{{ repairDetails.client.name }} {{ repairDetails.client.lastname }}</p>
+          </div>
+          <div class="">
+            <p><strong>Estado:</strong></p>
+            <span
+              :class="getStatusStyle(repairDetails.repairStatus.name)"
+              class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full"
+            >
+              <span
+                :class="getStatusDotStyle(repairDetails.repairStatus.name)"
+                class="w-2 h-2 me-1 rounded-full"
+              ></span>
+              {{ translateStatus(repairDetails.repairStatus.name) }}
+            </span>
+          </div>
+          <div>
+            <p><strong>Observacion Reparacion:</strong></p>
+            <p>{{ repairDetails.repair_observations }} {{ repairDetails.client.lastname }}</p>
+          </div>
+          <div>
+            <p><strong>Observacion diagnostico:</strong></p>
+            <p>{{ repairDetails.diagnostic_observations }} {{ repairDetails.client.lastname }}</p>
+          </div>
+
+          <!-- Mostrar imágenes de diagnóstico -->
+          <div class="col-span-2">
+            <p><strong>Imágenes de Diagnóstico:</strong></p>
+            <div class="flex gap-4 flex-wrap">
+              <img
+                v-for="image in repairDetails.diagnosticImage"
+                :key="image.id"
+                :src="`${baseDiagnosisUrl}/${image.name}`"
+                alt="Imagen de Diagnóstico"
+                class="w-32 h-32 object-cover rounded-md border"
+              />
+            </div>
+          </div>
+
+          <!-- Mostrar imágenes de reparación -->
+          <div class="col-span-2">
+            <p><strong>Imágenes de Reparación:</strong></p>
+            <div class="flex gap-4 flex-wrap">
+              <img
+                v-for="image in repairDetails.repairImage"
+                :key="image.id"
+                :src="`${baseRepairUrl}/${image.name}`"
+                alt="Imagen de Reparación"
+                class="w-32 h-32 object-cover rounded-md border"
+              />
+            </div>
+          </div>
         </div>
-  
-        <!-- Cuerpo del modal -->
-        <div v-if="isLoading" class="flex justify-center items-center h-32">
-          <div
-            class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"
-          ></div>
-        </div>
+
         <div v-else>
-          <div v-if="repairDetails" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <div>
-              <p><strong>Descripción del Problema:</strong></p>
-              <p>{{ repairDetails.problem_description }}</p>
-            </div>
-            <div>
-              <p><strong>Fecha de Ingreso:</strong></p>
-              <p>{{ formatDate(repairDetails.entry_date) }}</p>
-            </div>
-            <div>
-              <p><strong>Estado:</strong></p>
-              <p>{{ translateStatus(repairDetails.repairStatus.name) }}</p>
-            </div>
-            <div>
-              <p><strong>Modelo:</strong></p>
-              <p>{{ repairDetails.device.model }}</p>
-            </div>
-            <div>
-              <p><strong>Marca:</strong></p>
-              <p>{{ repairDetails.device.brand }}</p>
-            </div>
-            <div>
-              <p><strong>Tipo de Dispositivo:</strong></p>
-              <p>{{ translateDeviceType(repairDetails.device.deviceType.name) }}</p>
-            </div>
-            <div>
-              <p><strong>Costo Estimado:</strong></p>
-              <p>${{ repairDetails.diagnostic_estimated_cost.toFixed(2) }}</p>
-            </div>
-            <div>
-              <p><strong>Precio Total:</strong></p>
-              <p>${{ repairDetails.total_price.toFixed(2) }}</p>
-            </div>
-            <div >
-                  <span
-                    :class="getStatusStyle(repairDetails.repairStatus.name)"
-                    class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full"
-                  >
-                    <span
-                      :class="getStatusDotStyle(repairDetails.repairStatus.name)"
-                      class="w-2 h-2 me-1 rounded-full"
-                    ></span>
-                    {{ translateStatus(repairDetails.repairStatus.name) }}
-                  </span>
-                </div>
-          </div>
-          <div v-else>
-            <p class="text-red-500">No se pudo cargar la información.</p>
-          </div>
+          <p class="text-red-500">No se pudo cargar la información.</p>
         </div>
       </div>
     </div>
-  </template>
-  
+  </div>
+</template>
 
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
@@ -104,8 +150,36 @@ interface RepairDetails {
       name: string;
     };
   };
-  diagnosticImage: any[];
-  repairImage: any[];
+  diagnosticImage: { id: number; name: string }[];
+  repairImage: { id: number; name: string }[];
+  client: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    new_user: boolean;
+    active: boolean;
+    userType: {
+      id: number;
+      name: string;
+    };
+    username: string;
+  };
+  technician: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    new_user: boolean;
+    active: boolean;
+    userType: {
+      id: number;
+      name: string;
+    };
+    username: string;
+  };
 }
 
 export default defineComponent({
@@ -124,12 +198,14 @@ export default defineComponent({
   setup(props, { emit }) {
     const isLoading = ref(false);
     const repairDetails = ref<RepairDetails | null>(null);
+    const config = useRuntimeConfig();
+    const ApiUrl = config.public.apiUrl;
+    const baseDiagnosisUrl = `${ApiUrl}/images/diagnosis`;
+    const baseRepairUrl = "http://localhost:8008/api-sigser/images/repair";
 
     const fetchRepairDetails = async () => {
       try {
         isLoading.value = true;
-        const config = useRuntimeConfig();
-        const ApiUrl = config.public.apiUrl;
 
         const response = await axios.get(`${ApiUrl}/repair/${props.repairId}`);
         repairDetails.value = response.data.data as RepairDetails;
@@ -218,7 +294,6 @@ export default defineComponent({
       return date.toLocaleDateString("es-ES", options);
     };
 
-
     return {
       isLoading,
       repairDetails,
@@ -227,7 +302,9 @@ export default defineComponent({
       translateStatus,
       translateDeviceType,
       getStatusStyle,
-      getStatusDotStyle
+      getStatusDotStyle,
+      baseDiagnosisUrl,
+      baseRepairUrl,
     };
   },
 });

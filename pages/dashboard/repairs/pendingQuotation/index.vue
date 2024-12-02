@@ -35,7 +35,7 @@
           :key="repair.id"
           class="p-6 border border-gray-300 rounded-lg w-full max-w mx-auto bg-white shadow-lg text-center"
         >
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
             <div class="flex flex-col">
               <h1 class="font-semibold text-gray-700">Modelo</h1>
               <p class="text-gray-600">{{ repair.device.model }}</p>
@@ -43,6 +43,18 @@
             <div class="flex flex-col">
               <h1 class="font-semibold text-gray-700">Fecha de Ingreso</h1>
               <p class="text-gray-600">{{ formatDate(repair.entry_date) }}</p>
+            </div>
+            <div class="flex flex-col">
+              <h1 class="font-semibold text-gray-700">Tecnico</h1>
+              <p class="text-gray-600">
+                {{ repair.technician.name }} {{ repair.technician.lastname }}
+              </p>
+            </div>
+            <div class="flex flex-col">
+              <h1 class="font-semibold text-gray-700">Cliente</h1>
+              <p class="text-gray-600">
+                {{ repair.client.name }} {{ repair.client.lastname }}
+              </p>
             </div>
             <div class="flex flex-col">
               <h1 class="font-semibold text-gray-700">Tipo Dispositivo</h1>
@@ -99,7 +111,7 @@
       v-if="isStatusModalOpen && selectedRepair"
       :isModalOpen="isStatusModalOpen"
       :repair="selectedRepair"
-     @close="handleModalClose"
+      @close="handleModalClose"
     />
   </div>
 </template>
@@ -112,7 +124,7 @@ import RegisterQuotationModal from "~/components/ModalQuotation/RegisterQuotatio
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  middleware: "auth", // Aplica el middleware 'auth' a esta página
+  middleware: "auth",
 });
 
 interface Repair {
@@ -141,8 +153,36 @@ interface Repair {
       name: string;
     };
   };
-  diagnosticImage: any[];
-  repairImage: any[];
+  diagnosticImage: { id: number; name: string }[];
+  repairImage: { id: number; name: string }[];
+  client: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    new_user: boolean;
+    active: boolean;
+    userType: {
+      id: number;
+      name: string;
+    };
+    username: string;
+  };
+  technician: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    new_user: boolean;
+    active: boolean;
+    userType: {
+      id: number;
+      name: string;
+    };
+    username: string;
+  };
 }
 
 export default defineComponent({
@@ -221,11 +261,31 @@ export default defineComponent({
       return date.toLocaleDateString("es-ES", options);
     };
 
-    const translateStatus = (status: string): string =>
-      ({ QUOTATION: "Cotización" }[status] || status);
+    const statusTranslations: Record<string, string> = {
+      RECEIVED: "Recibido",
+      QUOTATION: "Cotización",
+      WAITING_FOR_PARTS: "Esperando piezas",
+      REPAIRING: "En reparación",
+      READY_FOR_COLLECTION: "Listo para entrega",
+      COLLECTED: "Entregado",
+      WAITING_FOR_CUSTOMER_APPROVAL: "Esperando aprobación del cliente",
+    };
 
+    // Mapa de traducción de tipos de dispositivos
+    const deviceTypeTranslations: Record<string, string> = {
+      LAPTOP: "Portátil",
+      SMARTPHONE: "Teléfono inteligente",
+      TABLET: "Tableta",
+      DESKTOP: "Computadora de escritorio",
+      VIDEOGAME_CONSOLE: "Consola de videojuegos",
+    };
+
+    const translateStatus = (status: string): string =>
+      statusTranslations[status] || status;
+
+    // Función para traducir tipos de dispositivos
     const translateDeviceType = (deviceType: string): string =>
-      ({ LAPTOP: "Portátil" }[deviceType] || deviceType);
+      deviceTypeTranslations[deviceType] || deviceType;
 
     const getStatusStyle = (status: string) =>
       ({ QUOTATION: "bg-gray-500 text-white dark:bg-gray-700 dark:text-white" }[
@@ -272,7 +332,7 @@ export default defineComponent({
       openStatusModal,
       isStatusModalOpen,
       selectedRepair,
-      handleModalClose
+      handleModalClose,
     };
   },
 });
