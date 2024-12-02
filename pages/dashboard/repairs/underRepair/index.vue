@@ -22,7 +22,11 @@
         class="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-1/3"
       >
         <option value="">Todos los estados</option>
-        <option v-for="status in statuses" :key="status.value" :value="status.value">
+        <option
+          v-for="status in statuses"
+          :key="status.value"
+          :value="status.value"
+        >
           {{ status.label }}
         </option>
       </select>
@@ -44,44 +48,55 @@
           :key="repair.id"
           class="p-6 border border-gray-300 rounded-lg w-full max-w mx-auto bg-white shadow-lg text-center"
         >
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="flex flex-col">
-              <h1 class="font-semibold text-gray-700">Modelo</h1>
-              <p class="text-gray-600">{{ repair.device.model }}</p>
-            </div>
-            <div class="flex flex-col">
-              <h1 class="font-semibold text-gray-700">Fecha de Ingreso</h1>
-              <p class="text-gray-600">{{ formatDate(repair.entry_date) }}</p>
-            </div>
-            <div class="flex flex-col">
-              <h1 class="font-semibold text-gray-700">Tipo Dispositivo</h1>
-              <p class="text-gray-600">
-                {{ translateDeviceType(repair.device.deviceType.name) }}
-              </p>
-            </div>
-            <div class="flex gap-4 justify-center items-center">
-              <div class="flex justify-center">
-                <span
-                  :class="getStatusStyle(repair.repairStatus.name)"
-                  class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full"
-                >
+          <div
+            class="cursor-pointer rounded-md"
+            @click="openModal(repair.id)"
+          >
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="flex flex-col">
+                <h1 class="font-semibold text-gray-700">Modelo</h1>
+                <p class="text-gray-600">{{ repair.device.model }}</p>
+              </div>
+              <div class="flex flex-col">
+                <h1 class="font-semibold text-gray-700">Fecha de Ingreso</h1>
+                <p class="text-gray-600">{{ formatDate(repair.entry_date) }}</p>
+              </div>
+              <div class="flex flex-col">
+                <h1 class="font-semibold text-gray-700">Tipo Dispositivo</h1>
+                <p class="text-gray-600">
+                  {{ translateDeviceType(repair.device.deviceType.name) }}
+                </p>
+              </div>
+              <div class="flex gap-4 justify-center items-center">
+                <div class="flex justify-center">
                   <span
-                    :class="getStatusDotStyle(repair.repairStatus.name)"
-                    class="w-2 h-2 me-1 rounded-full"
-                  ></span>
-                  {{ translateStatus(repair.repairStatus.name) }}
-                </span>
+                    :class="getStatusStyle(repair.repairStatus.name)"
+                    class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full"
+                  >
+                    <span
+                      :class="getStatusDotStyle(repair.repairStatus.name)"
+                      class="w-2 h-2 me-1 rounded-full"
+                    ></span>
+                    {{ translateStatus(repair.repairStatus.name) }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Mensaje si no hay datos -->
-        <div v-if="!paginatedRepairs.length" class="text-center text-gray-500">
-          No hay reparaciones registradas.
-        </div>
+      <!-- Mensaje si no hay datos -->
+      <div v-if="!paginatedRepairs.length" class="text-center text-gray-500">
+        No hay reparaciones registradas.
       </div>
     </div>
+
+    <RepairDetailsModal
+      :isOpen="isModalOpen"
+      :repairId="selectedRepairId"
+      @close="closeModal"
+    />
 
     <!-- Paginador fijo -->
     <div
@@ -103,6 +118,7 @@
         Siguiente
       </button>
     </div>
+    
   </div>
 </template>
 
@@ -112,6 +128,7 @@ import { defineComponent, ref, computed, onMounted } from "vue";
 import axios from "axios";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import { definePageMeta } from "#imports";
+import RepairDetailsModal from "~/components/ModalRepairDetails/RepairDetailsModal.vue";
 
 definePageMeta({
   middleware: "auth", // Aplica el middleware 'auth' a esta página
@@ -150,6 +167,7 @@ interface Repair {
 export default defineComponent({
   components: {
     NavHeader,
+    RepairDetailsModal
   },
   name: "RepairList",
   setup() {
@@ -161,6 +179,19 @@ export default defineComponent({
 
     const itemsPerPage = 4; // Elementos por página
     const currentPage = ref(1);
+
+    const isModalOpen = ref(false);
+    const selectedRepairId = ref<number | null>(null);
+
+    const openModal = (id: number) => {
+      selectedRepairId.value = id;
+      isModalOpen.value = true;
+    };
+
+    const closeModal = () => {
+      isModalOpen.value = false;
+      selectedRepairId.value = null;
+    };
 
     // Mapa de traducción de estados
     const statusTranslations: Record<string, string> = {
@@ -203,9 +234,9 @@ export default defineComponent({
         filtered = filtered.filter(
           (repair) =>
             repair.device.model.toLowerCase().includes(query) ||
-            deviceTypeTranslations[
-              repair.device.deviceType.name
-            ]?.toLowerCase().includes(query)
+            deviceTypeTranslations[repair.device.deviceType.name]
+              ?.toLowerCase()
+              .includes(query)
         );
       }
 
@@ -324,8 +355,11 @@ export default defineComponent({
       translateDeviceType,
       isLoading,
       errorMessage,
+      openModal,
+      closeModal,
+      isModalOpen,
+      selectedRepairId
     };
   },
 });
 </script>
-
