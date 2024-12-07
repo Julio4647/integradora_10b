@@ -107,15 +107,31 @@
             <label for="client" class="block text-md font-medium text-gray-700"
               >Cliente</label
             >
-            <multiselect
-              v-model="selectedClient"
-              :options="clients"
-              track-by="id"
-              label="name"
-              placeholder="Seleccione un Cliente"
-              class="w-full"
-            />
-            <ErrorMessage name="client" class="text-red-500 text-sm" />
+            <Field name="client" rules="required" v-slot="{ field, errors }">
+              <multiselect
+                v-bind="field"
+                v-model="selectedClient"
+                :options="clients"
+                track-by="id"
+                label="name"
+                placeholder="Seleccione un Cliente"
+                :no-options-message="() => 'No hay opciones disponibles'"
+                :no-results-message="() => 'No se encontraron resultados'"
+                :aria-labels="{
+                  remove: 'Presione retroceso para eliminar',
+                  open: 'Presione enter para abrir la lista',
+                  close: 'Presione enter para cerrar la lista',
+                  select: 'Presione enter para seleccionar',
+                  selected: 'Elemento seleccionado',
+                  deselect: 'Presione enter para quitar',
+                  noResults: 'No hay resultados',
+                }"
+                class="w-full"
+              />
+              <span v-if="errors.length" class="text-red-500 text-sm">
+                {{ errors[0] }}
+              </span>
+            </Field>
           </div>
 
           <!-- Técnico -->
@@ -126,15 +142,35 @@
             >
               Técnico
             </label>
-            <multiselect
-              v-model="selectedTechnician"
-              :options="technicians"
-              track-by="id"
-              label="name"
-              placeholder="Seleccione un Técnico"
-              class="w-full"
-            />
-            <ErrorMessage name="technician" class="text-red-500 text-sm" />
+            <Field
+              name="technician"
+              rules="required"
+              v-slot="{ field, errors }"
+            >
+              <multiselect
+                v-bind="field"
+                v-model="selectedTechnician"
+                :options="technicians"
+                track-by="id"
+                label="name"
+                placeholder="Seleccione un Técnico"
+                :no-options-message="() => 'No hay opciones disponibles'"
+                :no-results-message="() => 'No se encontraron resultados'"
+                :aria-labels="{
+                  remove: 'Presione retroceso para eliminar',
+                  open: 'Presione enter para abrir la lista',
+                  close: 'Presione enter para cerrar la lista',
+                  select: 'Presione enter para seleccionar',
+                  selected: 'Elemento seleccionado',
+                  deselect: 'Presione enter para quitar',
+                  noResults: 'No hay resultados',
+                }"
+                class="w-full"
+              />
+              <span v-if="errors.length" class="text-red-500 text-sm">
+                {{ errors[0] }}
+              </span>
+            </Field>
           </div>
 
           <!-- Comentarios -->
@@ -268,7 +304,7 @@ export default defineComponent({
           const createdDevice = deviceResponse.data;
           repairPayload.device.id = createdDevice.data.id;
 
-          console.log(repairPayload)
+          console.log(repairPayload);
           const repairResponse = await axios.post(
             `${ApiUrl}/repair/`,
             repairPayload,

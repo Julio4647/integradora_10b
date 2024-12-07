@@ -18,7 +18,9 @@
         <!-- Form Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
-            <label for="firstName" class="block text-md font-medium text-gray-700"
+            <label
+              for="firstName"
+              class="block text-md font-medium text-gray-700"
               >Nombre</label
             >
             <Field
@@ -71,9 +73,7 @@
             <ErrorMessage name="email" class="text-red-500 text-sm" />
           </div>
           <div>
-            <label
-              for="phone"
-              class="block text-md font-medium text-gray-700"
+            <label for="phone" class="block text-md font-medium text-gray-700"
               >Teléfono</label
             >
             <Field
@@ -84,7 +84,7 @@
               class="w-full px-3 py-2 border rounded"
               :class="{ 'border-red-500': errors.phone }"
               placeholder="Ingresar Teléfono"
-              rules="required"
+              rules="required|phone"
               v-model="phone"
             />
             <ErrorMessage name="phone" class="text-red-500 text-sm" />
@@ -124,6 +124,14 @@ defineRule("min", (value: string, [length]: [number]) => {
     ? true
     : `Debe tener al menos ${length} caracteres`;
 });
+defineRule("phone", (value: string) => {
+  if (!/^\d+$/.test(value)) {
+    return "El teléfono solo debe contener números";
+  }
+  return value.length === 10
+    ? true
+    : "El teléfono debe tener exactamente 10 dígitos";
+});
 
 export default defineComponent({
   props: {
@@ -143,6 +151,7 @@ export default defineComponent({
     const lastName = ref("");
     const email = ref("");
     const phone = ref("");
+    const token = localStorage.getItem("token");
 
     const submitForm = async () => {
       try {
@@ -155,7 +164,12 @@ export default defineComponent({
 
         const response = await axios.post(
           `${ApiUrl}/auth/signup/client`,
-          payload
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+            },
+          }
         );
 
         if (response.status === 201) {
@@ -190,5 +204,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

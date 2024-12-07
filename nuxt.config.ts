@@ -12,5 +12,6 @@ export default defineNuxtConfig({
   plugins: [
     "~/plugins/pinia", // Pinia debe inicializarse antes de cualquier plugin que use el store
     "~/plugins/auth.client",
+    '~/plugins/mqtt-subscriber.ts'
   ],
 });
