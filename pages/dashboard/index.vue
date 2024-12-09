@@ -36,7 +36,7 @@
       </div>
 
       <!-- Tabla de técnicos y reparaciones -->
-      <div class="mt-6 bg-white rounded-lg p-6">
+      <div v-if="topTechnicians.length > 0" class="mt-6 bg-white rounded-lg p-6">
         <h3 class="text-xl font-bold mb-4">Top 5 Técnicos con Más Reparaciones</h3>
         <table class="min-w-full table-auto border-collapse border shadow-lg border-gray-300">
           <thead>
@@ -60,6 +60,7 @@
     </div>
   </div>
 </template>
+
 
 <script lang="ts">
 definePageMeta({

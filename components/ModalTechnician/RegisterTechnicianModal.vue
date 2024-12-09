@@ -166,7 +166,7 @@ export default defineComponent({
         };
 
         const response = await axios.post(
-          `${ApiUrl}/auth/signup/client`,
+          `${ApiUrl}/auth/signup/technician`,
           payload,
           {
             headers: {
