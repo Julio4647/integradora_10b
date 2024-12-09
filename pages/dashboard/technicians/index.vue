@@ -143,7 +143,10 @@ export default defineComponent({
     const fetchTechnicians = async () => {
       try {
         isLoading.value = true; // Activar estado de carga
-        const response = await axios.get(`${ApiUrl}/user/technicians`);
+        const response = await axios.get(
+          `${ApiUrl}/user/technicians`
+        
+        );
         technicians.value = response.data.data;
       } catch (error) {
         console.error("Error fetching technicians:", error);

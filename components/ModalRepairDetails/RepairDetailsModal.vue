@@ -55,11 +55,17 @@
           </div>
           <div>
             <p><strong>Tecnico:</strong></p>
-            <p>{{ repairDetails.technician.name }} {{ repairDetails.technician.lastname }}</p>
+            <p>
+              {{ repairDetails.technician.name }}
+              {{ repairDetails.technician.lastname }}
+            </p>
           </div>
           <div>
             <p><strong>Cliente:</strong></p>
-            <p>{{ repairDetails.client.name }} {{ repairDetails.client.lastname }}</p>
+            <p>
+              {{ repairDetails.client.name }}
+              {{ repairDetails.client.lastname }}
+            </p>
           </div>
           <div class="">
             <p><strong>Estado:</strong></p>
@@ -76,15 +82,27 @@
           </div>
           <div>
             <p><strong>Observacion Reparacion:</strong></p>
-            <p>{{ repairDetails.repair_observations }} {{ repairDetails.client.lastname }}</p>
+            <p>
+              {{ repairDetails.repair_observations }}
+              {{ repairDetails.client.lastname }}
+            </p>
           </div>
           <div>
             <p><strong>Observacion diagnostico:</strong></p>
-            <p>{{ repairDetails.diagnostic_observations }} {{ repairDetails.client.lastname }}</p>
+            <p>
+              {{ repairDetails.diagnostic_observations }}
+              {{ repairDetails.client.lastname }}
+            </p>
           </div>
 
           <!-- Mostrar imágenes de diagnóstico -->
-          <div class="col-span-2">
+          <div
+            v-if="
+              repairDetails.diagnosticImage &&
+              repairDetails.diagnosticImage.length > 0
+            "
+            class="col-span-2"
+          >
             <p><strong>Imágenes de Diagnóstico:</strong></p>
             <div class="flex gap-4 flex-wrap">
               <img
@@ -98,7 +116,12 @@
           </div>
 
           <!-- Mostrar imágenes de reparación -->
-          <div class="col-span-2">
+          <div
+            v-if="
+              repairDetails.repairImage && repairDetails.repairImage.length > 0
+            "
+            class="col-span-2"
+          >
             <p><strong>Imágenes de Reparación:</strong></p>
             <div class="flex gap-4 flex-wrap">
               <img

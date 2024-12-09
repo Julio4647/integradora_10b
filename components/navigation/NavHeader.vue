@@ -4,7 +4,12 @@
     <nav class="bg-white h-17 flex items-center justify-between px-4 shadow-md">
       <!-- Logo -->
       <div class="text-white text-xl font-bold">
-        <img src="../../assets/logo (3).png" alt="Logo" srcset="" class="w-24 h-24">
+        <img
+          src="../../assets/logo (3).png"
+          alt="Logo"
+          srcset=""
+          class="w-24 h-24"
+        />
       </div>
 
       <!-- Menú hamburguesa para pantallas pequeñas -->
@@ -158,10 +163,12 @@
           class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20"
         >
           <a
-            href="/dashboard/profile"
+            href="#"
+            @click.prevent="openProfileModal"
             class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
-            >Perfil</a
           >
+            Perfil
+          </a>
           <a
             @click.prevent="handleLogout"
             class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
@@ -280,10 +287,12 @@
       <!-- Opciones de perfil y cerrar sesión en el menú hamburguesa -->
       <div class="mt-4 border-t border-gray-600 pt-2">
         <a
-          href="/dashboard/profile"
-          class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-700 rounded"
-          >Perfil</a
+          href="#"
+          @click.prevent="openProfileModal"
+          class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
         >
+          Perfil
+        </a>
         <a
           @click.prevent="handleLogout"
           class="block px-4 py-2 font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary hover:bg-gray-200"
@@ -292,6 +301,8 @@
         </a>
       </div>
     </div>
+    <!-- Modal de Perfil -->
+    <ModalProfile ref="profileModal" />
   </div>
 </template>
 
@@ -299,9 +310,11 @@
 import { defineComponent, ref } from "vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import { useRouter } from "vue-router"; // Importar useRouter
+import ModalProfile from "~/components/ModalProfile/ModalProfile.vue";
 
 export default defineComponent({
   name: "NavHeader",
+  components: { ModalProfile },
   setup() {
     const dropdownUsuariosOpen = ref(false);
     const dropdownOpen = ref(false);
@@ -309,6 +322,11 @@ export default defineComponent({
     const dropdownReparacionesOpen = ref(false);
 
     const router = useRouter(); // Instancia del router
+    const profileModal = ref();
+
+    const openProfileModal = () => {
+      profileModal.value?.openModal(); // Llama al método 'openModal' del modal
+    };
 
     const toggleDropdownUsuarios = () => {
       dropdownUsuariosOpen.value = !dropdownUsuariosOpen.value;
@@ -349,7 +367,9 @@ export default defineComponent({
       closeDropdown,
       toggleMobileMenu,
       toggleDropdownReparaciones,
-      handleLogout, // Exponer el método
+      handleLogout,
+      profileModal,
+      openProfileModal
     };
   },
 });
