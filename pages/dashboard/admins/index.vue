@@ -89,11 +89,6 @@
       </div>
     </div>
 
-    <EditAdminModal
-      v-if="isModalOpen"
-      :isModalOpen="isModalOpen"
-      @close="isModalOpen = false"
-    />
     <RegisterAdminModal
       v-if="isRegisterModalOpen"
       :isModalOpen="isRegisterModalOpen"
@@ -106,7 +101,6 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
-import EditAdminModal from "~/components/ModalAdmin/EditAdminModal.vue";
 import RegisterAdminModal from "~/components/ModalAdmin/RegisterAdminModal.vue";
 import axios from "axios";
 import { definePageMeta } from "#imports";
@@ -126,7 +120,6 @@ interface Admin {
 export default defineComponent({
   components: {
     NavHeader,
-    EditAdminModal,
     RegisterAdminModal,
   },
   name: "AdminList",
@@ -135,7 +128,7 @@ export default defineComponent({
     const isModalOpen = ref(false);
     const isRegisterModalOpen = ref(false);
     const admins = ref<Admin[]>([]);
-    const searchQuery = ref(""); // Query del buscador
+    const searchQuery = ref("");
     const currentPage = ref(1);
     const itemsPerPage = 4;
     const config = useRuntimeConfig();

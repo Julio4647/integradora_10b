@@ -107,6 +107,8 @@ import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useRuntimeConfig } from "#app";
+
 
 // Definir reglas
 defineRule("required", (value: string) => {
@@ -125,6 +127,8 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const showPassword = ref(false);
+    const config = useRuntimeConfig();
+    const ApiUrl = config.public.apiUrl;
 
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
@@ -149,7 +153,7 @@ export default defineComponent({
         console.log(requestBody);
 
         const apiUrl =
-          "http://localhost:8008/api-sigser/auth/forgot-password/update-password";
+          `${ApiUrl}/auth/forgot-password/update-password`;
 
         // Realizar la solicitud POST
         await axios.post(apiUrl, requestBody);

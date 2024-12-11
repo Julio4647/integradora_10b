@@ -115,7 +115,7 @@ import axios from "axios";
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  middleware: "auth", // Aplica el middleware 'auth' a esta página
+  middleware: "auth",
 });
 
 interface Device {
@@ -141,8 +141,8 @@ export default defineComponent({
     const currentPage = ref(1);
     const itemsPerPage = ref(6);
     const isLoading = ref(true);
-    const searchQuery = ref(""); // Buscador
-    const selectedDeviceType = ref(""); // Filtro por tipo de dispositivo
+    const searchQuery = ref("");
+    const selectedDeviceType = ref("");
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
 
@@ -156,7 +156,6 @@ export default defineComponent({
         const response = await axios.get(`${ApiUrl}/device/`);
         items.value = response.data.data;
       } catch (error) {
-        console.error("Error fetching devices:", error);
       } finally {
         isLoading.value = false;
       }
@@ -164,7 +163,7 @@ export default defineComponent({
 
     const handleModalClose = () => {
       isRegisterModalOpen.value = false;
-      location.reload(); // Esto recargará la página al cerrar el modal
+      location.reload();
     };
 
     onMounted(() => {

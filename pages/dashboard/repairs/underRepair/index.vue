@@ -207,13 +207,13 @@ export default defineComponent({
   },
   name: "RepairList",
   setup() {
-    const repairs = ref<Repair[]>([]); // Lista de reparaciones
-    const isLoading = ref(true); // Estado de carga
-    const errorMessage = ref(""); // Mensaje de error
-    const searchQuery = ref(""); // Consulta de búsqueda
-    const selectedStatus = ref(""); // Filtro de estado
+    const repairs = ref<Repair[]>([]);
+    const isLoading = ref(true);
+    const errorMessage = ref(""); 
+    const searchQuery = ref(""); 
+    const selectedStatus = ref("");
 
-    const itemsPerPage = 4; // Elementos por página
+    const itemsPerPage = 4;
     const currentPage = ref(1);
 
     const isModalOpen = ref(false);
@@ -360,7 +360,6 @@ export default defineComponent({
 
         const response = await axios.get(`${ApiUrl}/repair/`);
         repairs.value = response.data.data;
-        console.log(response.data.data);
       } catch (error) {
         errorMessage.value =
           "Ocurrió un problema al cargar las reparaciones. Intente de nuevo.";

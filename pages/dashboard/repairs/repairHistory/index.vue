@@ -104,7 +104,7 @@ import NavHeader from "~/components/navigation/NavHeader.vue";
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  middleware: "auth", // Aplica el middleware 'auth' a esta página
+  middleware: "auth",
 });
 
 interface Repair {
@@ -143,10 +143,10 @@ export default defineComponent({
   },
   name: "CollectedRepairsList",
   setup() {
-    const repairs = ref<Repair[]>([]); // Lista de reparaciones
-    const isLoading = ref(true); // Estado de carga
-    const searchQuery = ref(""); // Filtro de búsqueda
-    const itemsPerPage = 4; // Elementos por página
+    const repairs = ref<Repair[]>([]); 
+    const isLoading = ref(true);
+    const searchQuery = ref("");
+    const itemsPerPage = 4;
     const currentPage = ref(1);
 
     const totalPages = computed(() =>

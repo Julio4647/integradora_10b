@@ -91,11 +91,6 @@
       </div>
     </div>
 
-    <EditTechnicianModal
-      v-if="isModalOpen"
-      :isModalOpen="isModalOpen"
-      @close="isModalOpen = false"
-    />
     <RegisterTechnicianModal
       v-if="isRegisterModalOpen"
       :isModalOpen="isRegisterModalOpen"
@@ -108,7 +103,6 @@
 import { defineComponent, ref, computed, onMounted } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import RegisterTechnicianModal from "~/components/ModalTechnician/RegisterTechnicianModal.vue";
-import EditTechnicianModal from "~/components/ModalTechnician/EditTechnicianModal.vue";
 import axios from "axios";
 import { definePageMeta } from "#imports";
 
@@ -128,7 +122,6 @@ export default defineComponent({
   components: {
     NavHeader,
     RegisterTechnicianModal,
-    EditTechnicianModal,
   },
   name: "TechnicianList",
   setup() {

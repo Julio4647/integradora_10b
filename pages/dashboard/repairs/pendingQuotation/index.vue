@@ -192,12 +192,12 @@ export default defineComponent({
   },
   name: "QuotationList",
   setup() {
-    const isStatusModalOpen = ref(false); // Controla si el modal está abierto
-    const selectedRepair = ref<Repair | null>(null); // Guarda la reparación seleccionada
-    const repairs = ref<Repair[]>([]); // Lista de reparaciones
-    const isLoading = ref(true); // Estado de carga
-    const searchQuery = ref(""); // Filtro de búsqueda
-    const itemsPerPage = 4; // Elementos por página
+    const isStatusModalOpen = ref(false);
+    const selectedRepair = ref<Repair | null>(null);
+    const repairs = ref<Repair[]>([]);
+    const isLoading = ref(true);
+    const searchQuery = ref("");
+    const itemsPerPage = 4;
     const currentPage = ref(1);
 
     const openStatusModal = (repair: Repair) => {
@@ -304,7 +304,6 @@ export default defineComponent({
         const response = await axios.get(`${ApiUrl}/repair/`);
         repairs.value = response.data.data;
       } catch (error) {
-        console.error("Error al cargar las reparaciones:", error);
       } finally {
         isLoading.value = false;
       }

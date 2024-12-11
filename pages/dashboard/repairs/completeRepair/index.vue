@@ -131,7 +131,7 @@ import Swal from "sweetalert2";
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  middleware: "auth", // Aplica el middleware 'auth' a esta página
+  middleware: "auth",
 });
 
 interface Repair {
@@ -177,9 +177,8 @@ export default defineComponent({
     const itemsPerPage = 4;
     const currentPage = ref(1);
 
-    // Filtros
-    const searchQuery = ref(""); // Buscador
-    const selectedDeviceType = ref(""); // Select de tipos de dispositivos
+    const searchQuery = ref("");
+    const selectedDeviceType = ref(""); 
 
     const openDeliveryModal = (repair: Repair) => {
       selectedRepair.value = repair;

@@ -160,7 +160,7 @@ defineRule("min", (value: string, [length]: [number]) => {
 });
 
 defineRule("noJsonOrSql", (value: string) => {
-  const jsonRegex = /{.*}|:|,/; // Detecta patrones de JSON
+  const jsonRegex = /{.*}|:|,/; 
   const sqlRegex =
     /(select|insert|delete|update|drop|union|create|alter|where|--|' or '|;|--)/i; // Mejora para inyecciones SQL
 

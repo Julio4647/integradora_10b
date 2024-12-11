@@ -168,8 +168,6 @@ export default defineComponent({
           headers: { "Content-Type": "application/json" },
         });
 
-        // Inspecciona la respuesta para asegurarte de que es válida
-        console.log("Respuesta del servidor:", response.data);
 
         // Extrae los datos desde la respuesta
         const userInfo = response.data.data?.userInfo;

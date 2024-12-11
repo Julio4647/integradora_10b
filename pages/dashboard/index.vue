@@ -141,7 +141,6 @@ export default defineComponent({
           (repair: any) => repair.repairStatus.name === "QUOTATION"
         ).length;
       } catch (error) {
-        console.error("Error al cargar los dispositivos:", error);
       }
     };
 
@@ -151,7 +150,6 @@ export default defineComponent({
         const clients = response.data.data || [];
         totalClients.value = clients.length;
       } catch (error) {
-        console.error("Error al cargar los clientes:", error);
       }
     };
 

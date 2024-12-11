@@ -69,6 +69,8 @@ import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
+import { useRuntimeConfig } from "#app";
+
 
 // Reglas de validación
 defineRule("required", (value: string) => {
@@ -88,6 +90,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const config = useRuntimeConfig();
+    const ApiUrl = config.public.apiUrl;
 
     const recoverPassword = async (values: Record<string, any>) => {
       try {
@@ -95,7 +99,7 @@ export default defineComponent({
         if (!email) throw new Error("El correo electrónico es obligatorio.");
 
         const apiUrl =
-          "http://localhost:8008/api-sigser/auth/forgot-password/token";
+          `${ApiUrl}/auth/forgot-password/token`;
 
         // Realizar la petición POST
         await axios.post(apiUrl, { email });

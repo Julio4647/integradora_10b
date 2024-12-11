@@ -11,7 +11,7 @@
         <h1 class="text-2xl sm:text-3xl font-bold">Lista de Clientes</h1>
         <button
           @click="openRegisterModal"
-          class="focus:outline-none font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+          class="focus:outline-none hover:scale-105 transition-all cursor-pointer hover:text-primary mt-2 sm:mt-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
         >
           Registrar Nuevo Cliente
         </button>
@@ -80,12 +80,6 @@
       </button>
     </div>
 
-    <!-- Modales -->
-    <EditClientModal
-      v-if="isModalOpen"
-      :isModalOpen="isModalOpen"
-      @close="isModalOpen = false"
-    />
     <RegisterClientModal
       v-if="isRegisterModalOpen"
       :isModalOpen="isRegisterModalOpen"
@@ -98,7 +92,6 @@
 import { defineComponent, ref, computed, onMounted } from "vue";
 import NavHeader from "~/components/navigation/NavHeader.vue";
 import RegisterClientModal from "~/components/ModalClient/RegisterClientModal.vue";
-import EditClientModal from "~/components/ModalClient/EditClientModal.vue";
 import axios from "axios";
 import { definePageMeta } from "#imports";
 
@@ -118,7 +111,6 @@ export default defineComponent({
   components: {
     NavHeader,
     RegisterClientModal,
-    EditClientModal,
   },
   setup() {
     const isLoading = ref(true); // Indicador de carga
