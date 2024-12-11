@@ -156,10 +156,10 @@ export default defineComponent({
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
     const authStore = useAuthStore();
-    console.log(ApiUrl);
 
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
+      console.log("API URL:", ApiUrl);
     };
 
     const loginSystem = async (values: Record<string, any>) => {
