@@ -4,7 +4,7 @@
   >
     <!-- Card de login -->
     <div class="relative p-10 rounded-lg w-full max-w-md z-10">
-      <div class="flex justify-center mb-6">
+      <div class="flex justify-center mb-2">
         <img src="../assets/logo (3).png" alt="Logo" class="w-80 h-80" />
       </div>
 

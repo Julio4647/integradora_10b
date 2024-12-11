@@ -4,10 +4,10 @@
   >
     <!-- Card de recuperación de contraseña -->
     <div
-      class="relative p-10 border border-gray-600 rounded-lg w-full max-w-md z-10"
+      class="relative p-10 w-full max-w-md z-10"
     >
       <div class="flex justify-center mb-6">
-        <img src="../../assets/logo (3).png" alt="" srcset="" class="w-48 h-48">
+        <img src="../../assets/logo (3).png" alt="" srcset="" class="w-80 h-80">
       </div>
 
       <!-- Formulario -->

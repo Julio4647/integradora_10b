@@ -84,14 +84,12 @@
             <p><strong>Observacion Reparacion:</strong></p>
             <p>
               {{ repairDetails.repair_observations }}
-              {{ repairDetails.client.lastname }}
             </p>
           </div>
           <div>
             <p><strong>Observacion diagnostico:</strong></p>
             <p>
               {{ repairDetails.diagnostic_observations }}
-              {{ repairDetails.client.lastname }}
             </p>
           </div>
 
