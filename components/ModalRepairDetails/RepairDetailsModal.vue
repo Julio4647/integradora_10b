@@ -224,7 +224,7 @@ export default defineComponent({
     const config = useRuntimeConfig();
     const ApiUrl = config.public.apiUrl;
     const baseDiagnosisUrl = `${ApiUrl}/images/diagnosis`;
-    const baseRepairUrl = "http://localhost:8008/api-sigser/images/repair";
+    const baseRepairUrl = `${ApiUrl}/images/repair`;
 
     const fetchRepairDetails = async () => {
       try {
