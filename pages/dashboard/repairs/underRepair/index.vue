@@ -326,7 +326,7 @@ export default defineComponent({
     const getStatusStyle = (status: string) => {
       const styles: Record<string, string> = {
         RECEIVED: "bg-blue-500 text-white dark:bg-blue-700 dark:text-white",
-        QUOTATION: "bg-gray-500 text-white dark:bg-gray-700 dark:text-white",
+        QUOTATION: "bg-yellow-500 text-white dark:bg-yellow-400 dark:text-white",
         WAITING_FOR_PARTS:
           "bg-purple-500 text-white dark:bg-purple-700 dark:text-white",
         REPAIRING: "bg-green-500 text-white dark:bg-green-700 dark:text-white",
@@ -342,7 +342,7 @@ export default defineComponent({
     const getStatusDotStyle = (status: string) => {
       const dotStyles: Record<string, string> = {
         RECEIVED: "bg-blue-700",
-        QUOTATION: "bg-gray-700",
+        QUOTATION: "bg-yellow-700",
         WAITING_FOR_PARTS: "bg-purple-700",
         REPAIRING: "bg-green-700",
         READY_FOR_COLLECTION: "bg-teal-700",
