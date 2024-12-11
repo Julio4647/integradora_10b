@@ -81,7 +81,7 @@
             </span>
           </div>
           <div>
-            <p><strong>Observacion Reparacion:</strong></p>
+            <p class="text-gray-950"><strong>Observacion Reparacion:</strong></p>
             <p>
               {{ repairDetails.repair_observations }}
             </p>
