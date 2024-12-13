@@ -1,13 +1,13 @@
-<template>
-  <div>
-    <h1>Hola MUndo</h1>
+<div id="pwa-container" style="width: 100%; height: 100vh;"></div>
 
-    <iframe
-      src="/pwa/index.html"
-      style="width: 100%; height: 100vh; border: none"
-      title="PWA App"
-    ></iframe>
-  </div>
-</template>
-<script src="../../public/pwa/index.html"/>
-<script src="/pwa/index.html"/>
+<script>
+  fetch('/public/pwa/index.html')
+    .then(response => {
+      if (!response.ok) throw new Error('Error al cargar el archivo');
+      return response.text();
+    })
+    .then(html => {
+      document.getElementById('pwa-container').innerHTML = html;
+    })
+    .catch(error => console.error(error));
+</script>
