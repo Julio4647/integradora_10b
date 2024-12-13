@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Dispositivos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pouchdb/7.0.0/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            background-color: #e3f2fd;
+        }
+
+        .navbar {
+            background-color: #0d6efd;
+        }
+
+        .navbar .nav-link {
+            color: #fff !important;
+        }
+
+        .navbar .nav-link:hover {
+            background-color: #0056b3;
+        }
+
+        .card {
+            border-radius: 15px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #userList {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">Gestión de Dispositivos</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold">Gestión de Dispositivos</h1>
+            <p class="text-muted">Administra dispositivos de forma eficiente</p>
+            <button id="addUserBtn" class="btn btn-primary btn-lg shadow-sm">Agregar Dispositivo</button>
+        </div>
+
+        <!-- Formulario para agregar un nuevo usuario -->
+        <div id="deviceForm" class="card p-4 shadow-sm" style="display: none;">
+            <h3 class="mb-3">Agregar Dispositivo</h3>
+            <form id="form">
+                <div class="mb-3">
+                    <input type="text" id="modelDevice" class="form-control" placeholder="Modelo" required />
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="brandDevice" class="form-control" placeholder="Marca" required />
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="numberSerialDevice" class="form-control" placeholder="Número de Serie" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Seleccione un tipo de dispositivos:</label>
+                    <select id="deviceType" name="deviceType" class="form-select">
+                        <option value="1">LAPTOP</option>
+                        <option value="2">DESKTOP</option>
+                        <option value="3">TABLET</option>
+                        <option value="4">SMARTPHONE</option>
+                        <option value="5">SMARTWATCH</option>
+                        <option value="6">VIDEOGAME_CONSOLE</option>
+                        <option value="7">SPEAKER</option>
+                    </select>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success me-2">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Formulario para editar un usuario -->
+        <div id="editDeviceForm" class="card p-4 shadow-sm" style="display: none;">
+            <h3 class="mb-3">Editar Usuario</h3>
+            <form id="editFormContent">
+                <div class="mb-3">
+                    <input type="text" id="editmodelDevice" class="form-control" placeholder="Modelo" required />
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="editbrandDevice" class="form-control" placeholder="Marca" required />
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="editnumberSerialDevice" class="form-control" placeholder="Número de Serie" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Seleccione un tipo de dispositivo:</label>
+                    <select id="editdeviceType" name="deviceType" class="form-select">
+                        <option value="1">LAPTOP</option>
+                        <option value="2">DESKTOP</option>
+                        <option value="3">TABLET</option>
+                        <option value="4">SMARTPHONE</option>
+                        <option value="5">SMARTWATCH</option>
+                        <option value="6">VIDEOGAME_CONSOLE</option>
+                        <option value="7">SPEAKER</option>
+                    </select>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-warning me-2">Actualizar</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de usuarios -->
+        <div id="userList">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped shadow-sm">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableList">
+                        <!-- Aquí se mostrarán los usuarios -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../pwa/app.js"></script>
+
+
+</body>
+
+</html>
