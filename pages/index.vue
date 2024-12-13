@@ -165,10 +165,11 @@ export default defineComponent({
     const loginSystem = async (values: Record<string, any>) => {
       try {
         // Realiza la petición al backend
+        console.log(values);
         const response = await axios.post(`${ApiUrl}/auth/login`, values, {
           headers: { "Content-Type": "application/json" },
         });
-
+          
 
         // Extrae los datos desde la respuesta
         const userInfo = response.data.data?.userInfo;

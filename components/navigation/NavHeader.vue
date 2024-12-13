@@ -46,6 +46,11 @@
           >Inicio</a
         >
         <a
+          href="/pwa"
+          class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary"
+          >PWA</a
+        >
+        <a
           href="/dashboard/devices"
           class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary"
           >Lista de Dispositivos</a
