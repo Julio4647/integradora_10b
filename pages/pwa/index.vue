@@ -1,7 +1,7 @@
 <script>
 export default {
   mounted() {
-    window.location.href = '../../public/pwa/index.html';
+    window.location.href = '/pwa/index.html';
   }
 };
 </script>
