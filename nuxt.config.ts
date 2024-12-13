@@ -2,6 +2,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vee-validate/nuxt', '@nuxtjs/tailwindcss'],
 
+  server: {
+    middleware: {
+      '/api': '~/server/api',
+    },
+  },
+  static: {
+    prefix: '/public/',
+  },
   runtimeConfig: {
     public: {
       apiUrl: process.env.API_URL,
