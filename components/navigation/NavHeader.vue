@@ -46,7 +46,7 @@
           >Inicio</a
         >
         <a
-          href="dashboard/pwa/index.html"
+          href="/dashboard/pwa"
           class="font-medium hover:scale-105 transition-all cursor-pointer hover:text-primary"
           >PWA</a
         >
