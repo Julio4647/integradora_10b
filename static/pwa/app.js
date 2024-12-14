@@ -1,11 +1,7 @@
 // Configuración inicial
 if (navigator.serviceWorker) {
     navigator.serviceWorker.register('/pwa/service-worker.js')
-        .then(() => {
-            if (Notification.permission !== 'granted') {
-                Notification.requestPermission();
-            }
-        });
+
 }
 
 // Bases de datos locales
