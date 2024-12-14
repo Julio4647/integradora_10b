@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Servir archivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/pwa', express.static(path.join(__dirname, 'public/pwa')));
 
 // Simulación de base de datos en memoria para pruebas
 let dataStore = [
